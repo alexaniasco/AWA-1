@@ -17,7 +17,6 @@ const Options = ({ onOptionClick, setPressedIndex, pressedIndex,sectionHover, se
                   onClick={() => onOptionClick(option.position2, option.label)}
                   key={index}
                   onMouseDown={() => {
-                    console.log(index, "asdasd");
                     setPressedIndex(index);
                   }} // Detecta cuando se presiona
                   onMouseEnter={() => {

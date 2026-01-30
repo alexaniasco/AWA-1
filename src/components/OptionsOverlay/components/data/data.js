@@ -2,7 +2,8 @@ export const options = [
     {
       label: "PROFESIONAL",
       img: "/soyUnPro.png",
-      position2: [-1.5, 0.5, 11.5],
+      //aca se maneja la posicion de la moneda dentro de las opciones
+      position2: [-2, 0.5, 12],
       left: "20%",
       right: "49%",
       exit: {
@@ -18,7 +19,8 @@ export const options = [
     {
       label: "EMPRESA",
       img: "/soyUnaEmpresa.png",
-      position2: [1.5, 0.2, 11.5],
+      //aca se maneja la posicion de la moneda dentro de las opciones
+      position2: [2, 0.5, 12],
       left: "88%",
       right: "24%",
       exit: {
@@ -35,7 +37,8 @@ export const options = [
     {
       label: "EXCLUSIVO",
       img: "/Exclusivo.png",
-      position2: [1.2, -0.5, 11.5],
+      //aca se maneja la posicion de la moneda dentro de las opciones
+      position2: [2.5, -0.5,12],
       left: "88%",
       right: "82%",
       exit: {

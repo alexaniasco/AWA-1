@@ -3,10 +3,12 @@ import { CoinModel } from "../3DModels/CoinModel";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Stars, SoftShadows, Html, Environment } from "@react-three/drei";
 import { AppContext } from "../../context/AppContext";
-import { IconParticles } from './IconParticles';
+import { IconParticles } from "./IconParticles";
 import Model from "../../context/Models";
 import * as THREE from "three";
 import OptimizedModel from "../3DModels/OptimizedModel";
+import GlassGroup from "../OptionsOverlay/components/GlassGroup";
+import { CombinedGlasses } from "../3DModels/CombinedGlasses";
 
 // Layer dedicado para las luces de la moneda
 const COIN_LIGHT_LAYER = 1;
@@ -65,7 +67,17 @@ const CoinLightRig = () => {
   const frontRef = useRef();
 
   useEffect(() => {
-    [ambientRef, hemiRef, keyRef, fillRef, rimRef, bounceRef, sparkleARef, sparkleBRef, frontRef].forEach((r) => {
+    [
+      ambientRef,
+      hemiRef,
+      keyRef,
+      fillRef,
+      rimRef,
+      bounceRef,
+      sparkleARef,
+      sparkleBRef,
+      frontRef,
+    ].forEach((r) => {
       if (r.current) r.current.layers.set(COIN_LIGHT_LAYER);
     });
   }, []);
@@ -150,7 +162,7 @@ const CoinLightRig = () => {
         decay={1.9}
         castShadow={false}
       />
-      
+
       {/* Luces de "halo" para que irradie poder alrededor */}
       <pointLight
         position={[0.0, 0.0, 0.0]}
@@ -201,35 +213,44 @@ const RotatingGroup = ({ children }) => {
     }
   });
 
+  return <group ref={groupRef}>{children}</group>;
+};
+
+const FloatingModel = ({
+  position = [0, 0, 0],
+  offset = 0,
+  children,
+  character,
+}) => {
+  const ref = useRef();
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (character === 1) {
+      ref.current.position.y = Math.sin(t * 1.1 + offset) * 0.08; // flotación con desfase
+    } else {
+      ref.current.position.y = Math.sin(t * 1.1 + offset) * 0.1; // flotación con desfase
+    }
+  });
+
   return (
-    <group ref={groupRef}>
+    <group ref={ref} position={position}>
       {children}
     </group>
   );
 };
 
-
-const FloatingModel = ({ position = [0, 0, 0], offset = 0, children ,character}) => {
-  const ref = useRef()
-
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime()
-    if(character === 1){
-      ref.current.position.y = Math.sin(t * 1.1 + offset) * 0.08 // flotación con desfase
-
-    }
-    else {
-      ref.current.position.y = Math.sin(t * 1.1 + offset) * 0.1 // flotación con desfase
-
-    }
-  })
-
-  return <group ref={ref} position={position}>{children}</group>
-}
-
-
 export const Scene = () => {
-  const { scrollProgress, activeInfo, maletinRef, cajafuerteRef, astronautaRef, moveModelTo, astronauta2Ref, coinHasLanded } = useContext(AppContext);
+  const {
+    scrollProgress,
+    activeInfo,
+    maletinRef,
+    cajafuerteRef,
+    astronautaRef,
+    moveModelTo,
+    astronauta2Ref,
+    coinHasLanded,
+  } = useContext(AppContext);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { viewport, camera } = useThree();
 
@@ -248,8 +269,8 @@ export const Scene = () => {
   };
 
   useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   const showModels = scrollProgress <= 0.01 || activeInfo;
@@ -259,22 +280,29 @@ export const Scene = () => {
     <>
       <SoftShadows size={25} samples={16} focus={0.5} />
       <ambientLight intensity={0.5} />
-      
+
       {/* Environment para reflexiones realistas en la moneda */}
       <Environment preset="city" background={false} blur={0.25} />
-      
+
       {/* Sistema de iluminación dedicado para la moneda */}
       <CoinLightRig />
-      
+
       {/* Resplandor ambiental que hace que la moneda irradie luz al espacio */}
       <CoinAmbientGlow />
-      
+
       {/* Partículas de fondo (más lejanas) para dar profundidad */}
-      {coinHasLanded && <IconParticles count={6} zMin={-60} zMax={-40} opacityMultiplier={0.4} />}
-      
+      {coinHasLanded && (
+        <IconParticles
+          count={6}
+          zMin={-60}
+          zMax={-40}
+          opacityMultiplier={0.4}
+        />
+      )}
+
       {/* Partículas de íconos hexagonales (primer plano) - aparecen cuando la moneda ha aterrizado */}
       {coinHasLanded && <IconParticles />}
-      
+      <CombinedGlasses></CombinedGlasses>
       <directionalLight
         position={[5, 5, 5]}
         intensity={1}
@@ -295,7 +323,8 @@ export const Scene = () => {
         intensity={0.8}
         castShadow
       />
-      <directionalLight scale={2}
+      <directionalLight
+        scale={2}
         position={[-2, 0, 5]}
         intensity={scrollProgress > 0.4 && scrollProgress < 0.8 ? 0.5 : 0.5}
         castShadow
@@ -308,216 +337,8 @@ export const Scene = () => {
         shadow-camera-bottom={-10}
       />
 
-      <DynamicStars
-        scrollProgress={scrollProgress}
-        count={4000}
-      />
+      <DynamicStars scrollProgress={scrollProgress} count={4000} />
       <CoinModel scrollProgress={scrollProgress} />
-
-      {showModels && (
-        <>
-          <group ref={cajafuerteRef} position={positionModel ? [0, 0, -200] : [-10, 0, 10]} >
-            <Model
-              position={[-0.3, -0.08, 0]}
-              rotation={[mousePosition.y * 0.2, -0.6 + mousePosition.x * 0.2, 0]}
-              modelType="cajafuerte"
-            />
-            {scrollProgress > 0.4 && (
-              <Html
-                position={[-0.4, -0.6, 0]} // Ajusta la distancia detrás del modelo
-                style={{
-                  width: '950px',
-                  height: '950px',
-                  pointerEvents: 'none',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-                center
-                zIndexRange={[-1, -1]}
-              >
-                <img src="/baseModel.png" alt="Fondo Cajafuerte" style={{ width: '100%', height: '100%', objectFit: "contain" }} />
-              </Html>
-            )}
-          </group>
-        </>
-      )}
-
-      {showModels && (
-        <>
-          <group
-            ref={maletinRef}
-            position={positionModel ? [0, 0, -200] : [-8, 0, 10]}
-            rotation={[0.20, 0.2, 0]}
-          >
-            <Model
-              position={[-0.2, 0, -1]}
-              rotation={[-0, 17.9, 0.1]}
-              modelType="maletin"
-            />
-
-            {scrollProgress > 0.4 && (
-              <>
-                <Html
-                  position={[
-                    -0.2 + mousePosition.x * 0.02,
-                    0.3 + mousePosition.y * 0.05,
-                    0
-                  ]}
-                  style={{
-                    width: '100vw',
-                    height: '100vh',
-                    pointerEvents: 'none',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  center
-                  zIndexRange={[-1, -1]}
-
-                >
-                  <img src="/nubee.png" alt="Parallax 4" style={{ width: '100%', height: '100%', objectFit: "contain", imageRendering: "auto" }} />
-                </Html>
-                <Html
-                  position={[
-                    0.3 + mousePosition.x * 0.04,
-                    mousePosition.y * 0.02,
-                    0
-                  ]}
-                  style={{
-                    width: '100vw',
-                    height: '100vh',
-                    pointerEvents: 'none',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  center
-                  zIndexRange={[-1, -1]}
-
-                >
-                  <img src="/nubee.png" alt="Parallax 4" style={{ width: '120%', height: '120%', objectFit: "contain", imageRendering: "auto" }} />
-                </Html>
-                <Html
-                  position={[
-                    0.1 + mousePosition.x * 0.04,
-                    -0.3 + mousePosition.y * 0.02,
-                    0
-                  ]}
-                  style={{
-                    width: '100vw',
-                    height: '100vh',
-                    pointerEvents: 'none',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  center
-                  zIndexRange={[-1, -1]}
-
-                >
-                  <img src="/nubee.png" alt="Parallax 4" style={{ width: '120%', height: '120%', objectFit: "contain", imageRendering: "auto" }} />
-                </Html>
-                <Html
-                  position={[
-                    -0.1 + mousePosition.x * 0.04,
-                    mousePosition.y * 0.02,
-                    0
-                  ]}
-                  style={{
-                    width: '100vw',
-                    height: '100vh',
-                    pointerEvents: 'none',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  center
-                  zIndexRange={[-1, -1]}
-
-                >
-                  <img src="/nubee.png" alt="Parallax 4" style={{ width: '120%', height: '120%', objectFit: "contain", imageRendering: "auto" }} />
-
-                </Html>
-                <Html
-                  position={[
-                    0.3 + mousePosition.x * 0.04,
-                    0.3 + mousePosition.y * 0.02,
-                    0
-                  ]}
-                  style={{
-                    width: '100vw',
-                    height: '100vh',
-                    pointerEvents: 'none',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                  center
-                  zIndexRange={[-1, -1]}
-
-                >
-                  <img src="/nubee.png" alt="Parallax 4" style={{ width: '110%', height: '110%', objectFit: "contain", imageRendering: "auto" }} />
-                </Html>
-              </>
-            )}
-          </group>
-        </>
-      )}
-
-      {showModels && (
-        <>
-          <group
-            ref={astronautaRef}
-            position={positionModel ? [0, 0, -200] : [8, 0, 10]}
-            rotation={[0.20, 0.2, 0]}
-          >
-            {/* Grupo contenedor para los astronautas con rotación */}
-            <RotatingGroup>
-              {/* Primer astronauta */}
-              <FloatingModel character={1} position={[-0.24, 0, 0]}>
-                <Model
-                  modelType="astronauta"
-                  rotation={[0, Math.PI, 0]} // Mirando hacia el centro
-                />
-              </FloatingModel >
-
-              {/* Segundo astronauta */}
-              <FloatingModel character={2} position={[0.24, 0, 0]}>
-                <Model
-                  modelType="astronauta2"
-                  rotation={[0, 0, 0]} // Mirando hacia el centro
-                />
-              </FloatingModel >
-            </RotatingGroup>
-            {scrollProgress > 0.4 && (
-              <Html
-                position={[
-                  0,
-                  0,
-                  0
-                ]}
-                style={{
-                  width: '100vw',
-                  height: '110vh',
-                  pointerEvents: 'none',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-                center
-                zIndexRange={[-1, -1]}
-
-              >
-                <img src="/humoRojo.png" alt="Parallax 4" style={{ width: '100%', height: '100%', objectFit: "contain", imageRendering: "auto" }} />
-              </Html>
-            )}
-          </group>
-        </>
-      )}
-
-
-
     </>
   );
 };
@@ -546,13 +367,11 @@ const DynamicStars = ({ scrollProgress, count }) => {
   );
 };
 
-
-
 // {showModels && (
 //   <>
 //     {/* Cajafuerte: imagen PNG fija detrás, ligada al modelo */}
 //     <group position={positionModel ? [0, 0, -200] : [-10, 0, 10]} rotation={[mousePosition.y * 0.2, mousePosition.x * 0.2, 0]}>
-//       <Model 
+//       <Model
 //         ref={cajafuerteRef}
 //         position={[0, 0, 0]}
 //         rotation={[0, 0, 0]}
@@ -582,7 +401,7 @@ const DynamicStars = ({ scrollProgress, count }) => {
 //   <>
 //     {/* Maletín: 4 imágenes con parallax detrás, ligadas al modelo */}
 //     <group position={positionModel ? [0, 0, -200] : [-10, -2, 10]} rotation={[0, 18, 0]}>
-//       <Model 
+//       <Model
 //         ref={maletinRef}
 //         position={[0, 0, 0]}
 //         rotation={[0, 0, 0]}

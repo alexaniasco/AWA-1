@@ -19,7 +19,7 @@ export const OptionsOverlay = ({ onOptionClick }) => {
     // Delay para las imágenes de vidrio (GlassGroup)
     const glassTimer = setTimeout(() => {
       setIsGlassVisible(true);
-    }, 2500); // 3.5 segundos para que las partículas escapen primero
+    }, 1500); // 3.5 segundos para que las partículas escapen primero
 
     // Delay para los botones/opciones
     const optionsTimer = setTimeout(() => {
@@ -54,7 +54,7 @@ export const OptionsOverlay = ({ onOptionClick }) => {
     setTimeout(() => {
       setIsGlassVisible(true); // Mostrar imágenes después de 3.5 segundos
       setIsVisible(true); // Volver a mostrar opciones después de 4 segundos
-    }, 4000);
+    }, 500);
   };
 
   return (
@@ -71,11 +71,7 @@ export const OptionsOverlay = ({ onOptionClick }) => {
         zIndex: 20,
       }}
     >
-      {isGlassVisible && (
-      <GlassGroup
-        sectionHover={sectionHover}
-        activeInfo={activeInfo} />
-      )}
+    
       {isVisible && !activeInfo && !isLeavingOptions && (
         <Options
           sectionHover={sectionHover}

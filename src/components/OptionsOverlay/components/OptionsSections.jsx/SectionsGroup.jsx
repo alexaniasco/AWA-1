@@ -2,6 +2,21 @@ import "./SectionsGroup.css";
 import useSectionGroupService from "./hooks/useSectionGroupService";
 import Section from "./components/Section";
 
+const sectionsConfig = [
+    {
+        label: "EMPRESA",
+        position: "right"
+    },
+    {
+        label: "PROFESIONAL",
+        position: "left"
+    },
+    {
+        label: "EXCLUSIVO",
+        position: "right"
+    }
+];
+
 export default function SectionsGroup({ activeInfo, isVisible2, handleBackClick }) {
 
     const { setCurrentText } = useSectionGroupService()
@@ -13,17 +28,16 @@ export default function SectionsGroup({ activeInfo, isVisible2, handleBackClick 
 
     return (
         <div className="section-container">
-            {activeInfo === "EMPRESA" && isVisible2 && (
-                <Section section="EMPRESA" handleBack={handleBack} />
-            )}
-            {activeInfo === "PROFESIONAL" && isVisible2 && (
-                <Section section="PROFESIONAL" position="left" handleBack={handleBack} />
-            )}
-            {activeInfo === "EXCLUSIVO" && isVisible2 && (
-                <Section section="EXCLUSIVO" handleBack={handleBack} />
-
-            )}
+            {sectionsConfig.map((config) => (
+                activeInfo === config.label && isVisible2 && (
+                    <Section 
+                        key={config.label}
+                        section={config.label} 
+                        position={config.position} 
+                        handleBack={handleBack} 
+                    />
+                )
+            ))}
         </div>
     );
 };
-
