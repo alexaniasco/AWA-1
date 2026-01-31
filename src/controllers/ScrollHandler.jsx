@@ -1,13 +1,23 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext";
 
 export const ScrollHandler = () => {
   const { setScrollProgress, setIsLeavingOptions } = useContext(AppContext);
   
+  // Usar refs para mantener el estado entre re-renders sin causar re-renders
+  const currentSectionRef = useRef(0);
+  const isAnimatingRef = useRef(false);
+  
   useEffect(() => {
-    const sections = [0, 0.15, 0.45, 0.95];
-    let currentSection = 0;
-    let isAnimating = false;
+    const sections = [0, 0.27 , 0.45, 0.95];
+    
+    // Sincronizar la sección actual basándose en el scroll inicial
+    const initialScroll = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    const closestSection = sections.reduce((prev, curr) => 
+      Math.abs(curr - initialScroll) < Math.abs(prev - initialScroll) ? curr : prev
+    );
+    currentSectionRef.current = sections.indexOf(closestSection);
+    setScrollProgress(initialScroll);
 
     // Función de suavizado equilibrado (se comporta igual en ambos sentidos)
     const easeInOutQuad = (t) =>
@@ -37,8 +47,8 @@ export const ScrollHandler = () => {
           requestAnimationFrame(animateScroll);
         } else {
           setTimeout(() => {
-            isAnimating = false;
-          }, 300); // Pausa de 500ms para evitar saltos bruscos
+            isAnimatingRef.current = false;
+          }, 300); // Pausa de 300ms para evitar saltos bruscos
         }
       };
 
@@ -46,7 +56,7 @@ export const ScrollHandler = () => {
     };
 
     const handleScroll = () => {
-      if (isAnimating) return;
+      if (isAnimatingRef.current) return;
       
       const currentScroll = window.scrollY / (document.body.scrollHeight - window.innerHeight);
       setScrollProgress(currentScroll);
@@ -55,35 +65,35 @@ export const ScrollHandler = () => {
       const closestSection = sections.reduce((prev, curr) => 
         Math.abs(curr - currentScroll) < Math.abs(prev - currentScroll) ? curr : prev
       );
-      currentSection = sections.indexOf(closestSection);
+      currentSectionRef.current = sections.indexOf(closestSection);
     };
 
     const handleWheel = (event) => {
       event.preventDefault();
-      if (isAnimating) return;
+      if (isAnimatingRef.current) return;
 
       // Detectar si estamos en la sección OPTIONS (0.45) y scrolleamos hacia arriba
-      const isInOptionsSection = currentSection === 2; // sections[2] = 0.45
+      const isInOptionsSection = currentSectionRef.current === 2; // sections[2] = 0.45
       const isScrollingUp = event.deltaY < 0;
 
-      if (event.deltaY > 0 && currentSection < sections.length - 1) {
-        currentSection++;
-        const targetProgress = sections[currentSection];
-        isAnimating = true;
+      if (event.deltaY > 0 && currentSectionRef.current < sections.length - 1) {
+        currentSectionRef.current++;
+        const targetProgress = sections[currentSectionRef.current];
+        isAnimatingRef.current = true;
         smoothScrollTo(targetProgress);
-      } else if (isScrollingUp && currentSection > 0) {
+      } else if (isScrollingUp && currentSectionRef.current > 0) {
         // Si estamos en OPTIONS y scrolleamos hacia arriba
         if (isInOptionsSection) {
           // Marcar que estamos animando para bloquear otros scrolls
-          isAnimating = true;
+          isAnimatingRef.current = true;
           
           // Activar la salida de las imágenes glass
           setIsLeavingOptions(true);
           
           // Esperar 1 segundo para que las imágenes desaparezcan
           setTimeout(() => {
-            currentSection--;
-            const targetProgress = sections[currentSection];
+            currentSectionRef.current--;
+            const targetProgress = sections[currentSectionRef.current];
             smoothScrollTo(targetProgress);
             
             // Reset después de que el scroll termine completamente (3s de scroll + 0.3s de pausa)
@@ -93,10 +103,10 @@ export const ScrollHandler = () => {
           }, 1000);
         } else {
           // Para otras secciones, comportamiento normal
-          currentSection--;
-      const targetProgress = sections[currentSection];
-      isAnimating = true;
-      smoothScrollTo(targetProgress);
+          currentSectionRef.current--;
+          const targetProgress = sections[currentSectionRef.current];
+          isAnimatingRef.current = true;
+          smoothScrollTo(targetProgress);
         }
       }
     };

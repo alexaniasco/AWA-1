@@ -1,24 +1,15 @@
 // src/components/ServiceCards/index.jsx
 import { AnimatePresence, motion } from "framer-motion";
 import "./ServiceCards.css";
-import LeftColumn from "./components/LeftColumn";
-import CardRows from "./components/cardRows";
-import { RenderCarousel } from "./components/renderCarousel.jsx";
 import { useContext, useEffect, useState } from "react";
 import { ServicesContext } from "./hooks/ServicesContext.js";
+import { ServiceSection } from "./ServiceSection.tsx";
 
 const ServiceCards = () => {
 
   const {
     expandedCard,
     showContainer,
-    showLeftColumnBackground,
-    leftColumnZIndex,
-    handleBack,
-    handleCardClick,
-    getCardVariants,
-    selectedCard,
-    DataServices,
     setLeftColumnZIndex,
     setShowLeftColumnBackground
   } = useContext(ServicesContext);
@@ -56,32 +47,8 @@ const ServiceCards = () => {
           transition={{ duration: 0.5 }}
           className="overlay"
         >
-          {expandedCard && (
-            <motion.img src="/BackArrowWhite.svg" style={{width:26,height:26}} onClick={handleBack} className="back-button">
-              
-            </motion.img>
-          )}
-          <div className="main-wrapper">
-            <LeftColumn
-              zIndex={leftColumnZIndex}
-              showBackground={showLeftColumnBackground}
-            />
-            <img src="/rightshadow2.webp" className="right-shadow" />
-            <motion.div className="right-column">
-              <AnimatePresence>{expandedCard && <RenderCarousel expandedCard={expandedCard}/>}</AnimatePresence>
-              <AnimatePresence>
-                {showContainer && (
-                  <CardRows
-                    DataServices={DataServices}
-                    selectedCard={selectedCard}
-                    handleCardClick={handleCardClick}
-                    getCardVariants={getCardVariants}
-                  />
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-        </motion.div>
+    <ServiceSection />
+    </motion.div>
       )}
     </AnimatePresence>
   );

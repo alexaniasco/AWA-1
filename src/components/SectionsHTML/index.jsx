@@ -1,30 +1,38 @@
-import React, { useContext, useEffect, useState } from "react";
+import { Suspense, lazy, useContext } from "react";
 import { AppContext } from "../../context/AppContext";
-import { useScrollManager } from "../../controllers/useScrollManager";
 import { SCROLL_RANGES } from "../../controllers/scrollConfig";
-import FirstText from "../Onboarding/FirstText";
-import { OptionsOverlay } from "../OptionsOverlay/OptionsOverlay";
-import { BladesAndReveal } from "../BladesAndReveal/BladesAndReveal";
-import ServiceCards from "../ServicesCards/ServiceCards";
-import ContactForm from "../ContactForm";
+
 import HomeSection from "../HomeSection/HomeSection";
 import SecondSection from "../SecondSection/SecondSection";
+
+const OptionsOverlay = lazy(() =>
+  import("../OptionsOverlay/OptionsOverlay").then((m) => ({
+    default: m.OptionsOverlay,
+  }))
+);
+const ServiceCards = lazy(() =>
+  import("../ServicesCards/ServiceCards").then((m) => ({
+    default: m.default,
+  }))
+);
+const ContactForm = lazy(() =>
+  import("../ContactForm").then((m) => ({
+    default: m.default,
+  }))
+);
 
 const SectionsHTML = () => {
   const {
     scrollProgress,
-    activeInfo,
-    setActiveInfo,
-    setCameraTarget,
-    setScrollProgress,
-    contactModal,
     handleOptionClick,
+    contactModal,
   } = useContext(AppContext);
-  useEffect(() => {
-    console.log(contactModal, "cambio");
-  }, [contactModal]);
-
-  const { isInSection } = useScrollManager(setScrollProgress);
+  
+  const isInSection = (section) => {
+    const range = SCROLL_RANGES.SECTIONS[section];
+    if (!range) return false;
+    return scrollProgress >= range[0] && scrollProgress < range[1];
+  };
   
   // Mostrar HomeSection cuando la moneda está en la primera posición (después del loader)
   const showHomeSection = scrollProgress >= 0 && scrollProgress < 0.2;
@@ -38,29 +46,27 @@ const SectionsHTML = () => {
       {showHomeSection && <HomeSection />}
       {showSecondSection && <SecondSection />}
       
-      {isInSection("TITLES")(scrollProgress) && (
-        <FirstText
-          sectionRange={SCROLL_RANGES.SECTIONS.TITLES}
-          scrollProgress={scrollProgress}
-        ></FirstText>
-      )}
-      {isInSection("OPTIONS")(scrollProgress) && (
-        <OptionsOverlay
-          onOptionClick={(position, label) =>
-            handleOptionClick(position, label)
-          }
-        />
-      )}
+ 
+      <Suspense fallback={null}>
+        {isInSection("OPTIONS") && (
+          <OptionsOverlay
+            onOptionClick={(position, label) =>
+              handleOptionClick(position, label)
+            }
+          />
+        )}
+      </Suspense>
 
-      {isInSection("BLADES")(scrollProgress) && (
-        <BladesAndReveal
-          scrollProgress={scrollProgress}
-          sectionRange={SCROLL_RANGES.SECTIONS.BLADES}
-        />
-      )}
+ 
 
-      {isInSection("CARDS")(scrollProgress) && <ServiceCards />}
-      <ContactForm></ContactForm>
+      <Suspense fallback={null}>
+        {isInSection("CARDS") && <ServiceCards />}
+      </Suspense>
+
+      {/* El modal es pesado (incluye 3D). Lo cargamos/mostramos solo cuando se necesita. */}
+      <Suspense fallback={null}>
+        {contactModal && <ContactForm />}
+      </Suspense>
 
     </>
   );

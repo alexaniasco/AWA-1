@@ -159,7 +159,6 @@ const CoinLightRig = () => {
         decay={2.2}
         castShadow={false}
       />
-
       {/* Luces de "halo" para que irradie poder alrededor - más suaves */}
       <pointLight
         position={[0.0, 0.0, 0.0]}
@@ -292,7 +291,6 @@ export const Scene = () => {
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
       />
-
       <CoinModel scrollProgress={scrollProgress} />
 
       {/* Modelo combinado de gafas integrado en el canvas principal */}

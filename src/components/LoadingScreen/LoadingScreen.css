@@ -1,11 +1,19 @@
 .loading-screen {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.87);
+  background: rgb(248, 249, 250);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  transition: opacity 1s ease-out, filter 1s ease-out;
+  opacity: 1;
+  filter: blur(0px);
+}
+
+.loading-screen.blur-out {
+  opacity: 0;
+  filter: blur(20px);
 }
 
 .loading-title {

@@ -64,7 +64,6 @@ export const CombinedGlasses = ({
       if (child.isMesh && child.material) {
         // Aseguramos que el mesh sea visible
         child.visible = true;
-
         const mats = Array.isArray(child.material)
           ? child.material
           : [child.material];
@@ -74,7 +73,6 @@ export const CombinedGlasses = ({
           if (mat.userData.baseOpacity === undefined) {
             mat.userData.baseOpacity = mat.opacity ?? 1;
           }
-
           const name = (mat.name ?? "").toLowerCase();
           const isGlass =
             name.includes("glass") ||
@@ -114,12 +112,10 @@ export const CombinedGlasses = ({
 
           // Material no-vidrio: lo dejamos como está por ahora
           mat.visible = true;
-
           // Configuramos propiedades importantes para que el material se vea
           if (mat.opacity < 1 || mat.transparent) {
             mat.transparent = true;
           }
-
           // Aseguramos que se vea desde ambos lados
           if (mat.side === undefined) {
             mat.side = THREE.DoubleSide;
@@ -158,7 +154,6 @@ export const CombinedGlasses = ({
       const meshColor = MESH_COLORS[index % MESH_COLORS.length].clone();
       // Color emissive más sutil (30% del color base)
       const emissiveColor = meshColor.clone().multiplyScalar(0.3);
-
       entry.materials.forEach((mat) => {
         // Aplicar color a materiales de vidrio
         if (mat.isMeshPhysicalMaterial) {

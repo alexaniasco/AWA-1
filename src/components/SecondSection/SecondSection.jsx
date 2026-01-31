@@ -34,7 +34,7 @@ const SecondSection = () => {
     if (!showContent) return;
 
     const startTime = Date.now();
-    const duration = 1500; // 1.2 segundos para la animación
+    const duration = 1000; // 1.2 segundos para la animación
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
@@ -98,8 +98,8 @@ const SecondSection = () => {
     scrollOpacity = 1;
   } else if (scrollProgress >= 0.3) {
     // Transición hacia sección 3: mover hacia ARRIBA
-    const forwardProgress = Math.min((scrollProgress - 0.3) / 0.15, 1);
-    translateY = forwardProgress * -150; // Mover hacia arriba más distancia (negativo)
+    const forwardProgress = Math.min((scrollProgress - 0.3) / 0.50, 1);
+    translateY = forwardProgress * -300; // Mover hacia arriba más distancia (negativo)
     
     // Fade out solo cuando ya está saliendo (después del 60% del movimiento)
     const fadeOutStart = 0.6;

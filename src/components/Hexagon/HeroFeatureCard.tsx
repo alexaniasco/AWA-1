@@ -67,6 +67,7 @@ export default function HeroFeatureCard({
   return (
     <div className="hero-feature-card">
       <motion.div
+      style={{marginBottom: "-20px"}}
         initial={{ opacity: 0, y: 40, scale: 0.92 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}

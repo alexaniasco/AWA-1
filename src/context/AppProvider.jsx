@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { AppContext } from "./AppContext";
-import { useGLTF } from "@react-three/drei";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 // Proveedor del contexto
 export const AppProvider = ({ children }) => {
@@ -17,117 +15,22 @@ export const AppProvider = ({ children }) => {
   const astronautaRef = useRef(null);
   const astronauta2Ref = useRef(null);
 
-  // Estado para gestionar modelos precargados y progreso de carga
-  const [preloadedModels, setPreloadedModels] = useState({
-    maletin: null,
-    cajafuerte: null,
-    // Agregar otros modelos aquí
-  });
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [coinHasLanded, setCoinHasLanded] = useState(false);
   const [isLeavingOptions, setIsLeavingOptions] = useState(false);
-
+  const [sectionHover, setSectionHover] = useState("");
+  // Loader liviano: evitamos importar `three/examples/jsm/Addons.js` (muy pesado) para no inflar el bundle.
+  // Si en el futuro querés precargar GLBs, conviene usar `useGLTF.preload()` desde drei.
   useEffect(() => {
-    const totalModels = 4;
-    let loadedModels = 0;
-
-    const updateProgress = () => {
-      loadedModels++;
-      setLoadingProgress(loadedModels / totalModels);
-
-      if (loadedModels === totalModels) {
-        setTimeout(() => setIsLoading(false), 1000);
-      }
-    };
-
-    const loadModels = async () => {
-      try {
-        // Cargar modelos usando promesas
-        const loadModel = (url) => {
-          return new Promise((resolve, reject) => {
-            const loader = new GLTFLoader();
-            loader.load(
-              url,
-              (gltf) => {
-                resolve(gltf);
-                updateProgress();
-              },
-              (xhr) => {
-                if (xhr.lengthComputable) {
-                  const modelProgress = xhr.loaded / xhr.total;
-                  console.log(
-                    `Modelo ${url}: ${Math.round(
-                      modelProgress * 100,
-                    )}% cargado`,
-                  );
-                }
-              },
-              (error) => {
-                console.error(`Error cargando ${url}:`, error);
-                reject(error);
-              },
-            );
-          });
-        };
-
-        // Cargar modelos en paralelo
-        const [cajafuerteModel, maletinModel, atronautaModel, atronauta2Model] =
-          await Promise.all([
-            loadModel("/cajafuerteFinal.glb"),
-            loadModel("/maletinFinal.glb"),
-            loadModel("/astronauta1Final.glb"),
-            loadModel("/astronauta2Final.glb"),
-          ]);
-
-        console.log("Modelos cargados exitosamente");
-        setPreloadedModels({
-          astronauta: atronautaModel.scene,
-          astronauta2: atronauta2Model.scene,
-
-          maletin: maletinModel.scene,
-          cajafuerte: cajafuerteModel.scene,
-        });
-      } catch (error) {
-        console.error("Error al cargar modelos:", error);
-        setIsLoading(false);
-      }
-    };
-
-    loadModels();
+    setLoadingProgress(1);
+    const t = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(t);
   }, []);
 
   const moveCameraTo = (position, lookAt = [0, 0, 0]) => {
     setCameraTarget(position);
     setCameraLookAtTarget(lookAt);
-  };
-
-  const swapModelPositions = (model1Ref, model2Ref) => {
-    if (!model1Ref.current || !model2Ref.current) return;
-
-    // Guardar posiciones originales
-    const model1Pos = model1Ref.current.position.clone();
-    const model2Pos = model2Ref.current.position.clone();
-
-    // Animación de intercambio
-    const duration = 1000; // 1 segundo de duración
-    const startTime = performance.now();
-
-    const animateSwap = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // Interpolación lineal para movimiento suave
-      model1Ref.current.position.lerpVectors(model1Pos, model2Pos, progress);
-
-      model2Ref.current.position.lerpVectors(model2Pos, model1Pos, progress);
-
-      if (progress < 1) {
-        requestAnimationFrame(animateSwap);
-      }
-    };
-
-    requestAnimationFrame(animateSwap);
   };
 
   const moveModelTo = (modelRef, targetPosition, duration = 1500) => {
@@ -150,7 +53,7 @@ export const AppProvider = ({ children }) => {
       modelRef.current.position.lerpVectors(
         startPosition,
         targetPosition,
-        easedProgress,
+        easedProgress
       );
 
       if (rawProgress < 1) {
@@ -161,6 +64,7 @@ export const AppProvider = ({ children }) => {
     requestAnimationFrame(animateMove);
   };
 
+  // Reactotron removido para producción/optimización de bundle.
   const handleOptionClick = (position, label, modelRef) => {
     setActiveInfo(label);
     setCameraTarget(position);
@@ -190,15 +94,15 @@ export const AppProvider = ({ children }) => {
       handleOptionClick,
       contactModal,
       setContactModal,
-      swapModelPositions,
       moveModelTo,
-      preloadedModels,
       isLoading,
       loadingProgress,
       coinHasLanded,
       setCoinHasLanded,
       isLeavingOptions,
       setIsLeavingOptions,
+      sectionHover,
+      setSectionHover,
     }),
     [
       scrollProgress,
@@ -210,7 +114,8 @@ export const AppProvider = ({ children }) => {
       loadingProgress,
       coinHasLanded,
       isLeavingOptions,
-    ],
+      sectionHover,
+    ]
   );
 
   return (

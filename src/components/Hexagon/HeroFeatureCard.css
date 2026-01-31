@@ -38,8 +38,8 @@
 
 /* icono */
 .hero-feature-card__icon {
-  width: 300px;
-  height: 300px;
+  width: 350px;
+  height: 350px;
   object-fit: contain;
 
   transform-style: preserve-3d;
@@ -103,16 +103,7 @@
   position: relative;
 }
 
-.hero-feature-card__cta::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 100%;
-  height: 1px;
-  background-color: currentColor;
-  opacity: 0.4;
-}
+
 
 .hero-feature-card__cta:hover::after {
   opacity: 1;

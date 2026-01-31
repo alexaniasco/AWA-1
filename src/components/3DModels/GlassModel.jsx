@@ -1,13 +1,13 @@
-import { useRef, useEffect, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
-import * as THREE from 'three';
-import PropTypes from 'prop-types';
+import { useRef, useEffect, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import * as THREE from "three";
+import PropTypes from "prop-types";
 
 // Precarga de modelos
-useGLTF.preload('/glas1final.glb');
-useGLTF.preload('/glases222final.glb');
-useGLTF.preload('/glases333final.glb');
+useGLTF.preload("/glas1final.glb");
+useGLTF.preload("/glases222final.glb");
+useGLTF.preload("/glases333final.glb");
 
 /**
  * Componente de modelo de gafas que se renderiza dentro del canvas principal.
@@ -70,7 +70,7 @@ export const GlassModel = ({
 
     // Opacity animation
     opacityRef.current += (opacity - opacityRef.current) * 0.1;
-    
+
     // Aplicar opacity a los materiales
     if (clonedScene) {
       clonedScene.traverse((child) => {
@@ -89,11 +89,7 @@ export const GlassModel = ({
   if (!clonedScene || !visible) return null;
 
   return (
-    <group
-      ref={groupRef}
-      position={debugPosition}
-      rotation={debugRotation}
-    >
+    <group ref={groupRef} position={debugPosition} rotation={debugRotation}>
       <primitive object={clonedScene} />
     </group>
   );
