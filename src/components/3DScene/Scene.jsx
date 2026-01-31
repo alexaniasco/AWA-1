@@ -1,14 +1,11 @@
-import { useRef, useContext, useState, useEffect } from "react";
+/* eslint-disable react/no-unknown-property */
+import { useRef, useContext, useEffect } from "react";
 import { CoinModel } from "../3DModels/CoinModel";
+import { CombinedGlasses } from "../3DModels/CombinedGlasses";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Stars, SoftShadows, Html, Environment } from "@react-three/drei";
+import { SoftShadows, Environment, Lightformer } from "@react-three/drei";
 import { AppContext } from "../../context/AppContext";
 import { IconParticles } from "./IconParticles";
-import Model from "../../context/Models";
-import * as THREE from "three";
-import OptimizedModel from "../3DModels/OptimizedModel";
-import GlassGroup from "../OptionsOverlay/components/GlassGroup";
-import { CombinedGlasses } from "../3DModels/CombinedGlasses";
 
 // Layer dedicado para las luces de la moneda
 const COIN_LIGHT_LAYER = 1;
@@ -99,198 +96,159 @@ const CoinLightRig = () => {
       />
       <directionalLight
         ref={keyRef}
-        position={[4.2, 2.4, 5.2]}
-        intensity={2.8}
+        position={[15, 10, 20]}
+        intensity={1.8}
         color={"#ffd39a"}
         castShadow={false}
       />
       <pointLight
         ref={fillRef}
-        position={[-4.0, 1.4, 3.2]}
-        intensity={1.8}
+        position={[-15, 8, 12]}
+        intensity={1.0}
         color={"#ffffff"}
-        distance={90}
-        decay={1.9}
+        distance={120}
+        decay={2.2}
         castShadow={false}
       />
       <pointLight
         ref={rimRef}
-        position={[0.0, 3.8, -5.2]}
-        intensity={2.0}
+        position={[0.0, 12, -15]}
+        intensity={1.2}
         color={"#e8f2ff"}
-        distance={90}
-        decay={1.9}
+        distance={120}
+        decay={2.2}
         castShadow={false}
       />
       <pointLight
         ref={bounceRef}
-        position={[0.0, -2.2, 2.2]}
-        intensity={1.3}
+        position={[0.0, -10, 8]}
+        intensity={0.8}
         color={"#ffdb8f"}
-        distance={70}
-        decay={1.9}
+        distance={100}
+        decay={2.2}
         castShadow={false}
       />
       <spotLight
         ref={sparkleARef}
-        position={[2.2, 0.6, 3.6]}
-        intensity={4.0}
+        position={[12, 5, 18]}
+        intensity={2.0}
         color={"#ffffff"}
-        angle={0.6}
-        penumbra={0.7}
-        distance={110}
-        decay={1.9}
+        angle={0.3}
+        penumbra={1}
+        distance={150}
+        decay={2.2}
         castShadow={false}
       />
       <spotLight
         ref={sparkleBRef}
-        position={[-2.4, 1.2, 3.8]}
-        intensity={3.2}
+        position={[-12, 6, 18]}
+        intensity={1.6}
         color={"#fff9e3"}
-        angle={0.55}
-        penumbra={0.75}
-        distance={110}
-        decay={1.9}
+        angle={0.3}
+        penumbra={1}
+        distance={150}
+        decay={2.2}
         castShadow={false}
       />
       <pointLight
         ref={frontRef}
-        position={[0.0, 0.2, 6.5]}
-        intensity={3.2}
+        position={[0.0, 1, 25]}
+        intensity={1.8}
         color={"#ffe8ba"}
-        distance={130}
-        decay={1.9}
+        distance={180}
+        decay={2.2}
         castShadow={false}
       />
 
-      {/* Luces de "halo" para que irradie poder alrededor */}
+      {/* Luces de "halo" para que irradie poder alrededor - más suaves */}
       <pointLight
         position={[0.0, 0.0, 0.0]}
-        intensity={1.8}
+        intensity={1.0}
         color={"#ffd700"}
         distance={20}
-        decay={1.8}
+        decay={2.2}
       />
       <pointLight
-        position={[3.0, 0.0, 0.0]}
-        intensity={1.0}
+        position={[10.0, 0.0, 0.0]}
+        intensity={0.5}
         color={"#ffe97d"}
-        distance={18}
-        decay={2}
+        distance={25}
+        decay={2.5}
       />
       <pointLight
-        position={[-3.0, 0.0, 0.0]}
-        intensity={1.0}
+        position={[-10.0, 0.0, 0.0]}
+        intensity={0.5}
         color={"#ffe97d"}
-        distance={18}
-        decay={2}
+        distance={25}
+        decay={2.5}
       />
       <pointLight
-        position={[0.0, 3.0, 0.0]}
-        intensity={1.0}
+        position={[0.0, 10.0, 0.0]}
+        intensity={0.5}
         color={"#fff4d6"}
-        distance={18}
-        decay={2}
+        distance={25}
+        decay={2.5}
       />
       <pointLight
-        position={[0.0, -3.0, 0.0]}
-        intensity={1.0}
+        position={[0.0, -10.0, 0.0]}
+        intensity={0.5}
         color={"#ffda6a"}
-        distance={18}
-        decay={2}
+        distance={25}
+        decay={2.5}
       />
-    </group>
-  );
-};
-
-// Añade este componente justo después de la definición de Scene
-const RotatingGroup = ({ children }) => {
-  const groupRef = useRef();
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.5;
-    }
-  });
-
-  return <group ref={groupRef}>{children}</group>;
-};
-
-const FloatingModel = ({
-  position = [0, 0, 0],
-  offset = 0,
-  children,
-  character,
-}) => {
-  const ref = useRef();
-
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    if (character === 1) {
-      ref.current.position.y = Math.sin(t * 1.1 + offset) * 0.08; // flotación con desfase
-    } else {
-      ref.current.position.y = Math.sin(t * 1.1 + offset) * 0.1; // flotación con desfase
-    }
-  });
-
-  return (
-    <group ref={ref} position={position}>
-      {children}
     </group>
   );
 };
 
 export const Scene = () => {
-  const {
-    scrollProgress,
-    activeInfo,
-    maletinRef,
-    cajafuerteRef,
-    astronautaRef,
-    moveModelTo,
-    astronauta2Ref,
-    coinHasLanded,
-  } = useContext(AppContext);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const { viewport, camera } = useThree();
+  const { scrollProgress, activeInfo, coinHasLanded, isLeavingOptions } =
+    useContext(AppContext);
+  const { camera } = useThree();
+
+  const combinedGlasses = {
+    position: [0, 0, -8],
+    rotation: [0, 0, 0],
+    scale: 1,
+  };
+
+  // Calcular visibilidad de los glases basado en scrollProgress
+  // Importante: antes se usaba un end (0.52) distinto al fin de la sección (0.55),
+  // eso causaba cortes bruscos entre secciones. Ahora lo dejamos consistente.
+  const isInOptionsScreen = scrollProgress >= 0.35 && scrollProgress < 0.55;
+  // Mantener glasses visibles incluso cuando hay activeInfo (para que la moneda pase por detrás)
+  const showGlasses = isInOptionsScreen && !isLeavingOptions;
+  // Cuando hay activeInfo, mover los glasses hacia adelante para que la moneda pase por detrás
+  const glassesZOffset = activeInfo ? 15 : -3;
 
   // Habilitar el layer de luces de la moneda en la cámara
   useEffect(() => {
     camera.layers.enable(COIN_LIGHT_LAYER);
   }, [camera]);
 
-  // NUEVO: referencia para el grupo del maletín
-  const maletinGroupRef = useRef();
-
-  const handleMouseMove = (event) => {
-    const x = (event.clientX / window.innerWidth) * 2 - 1;
-    const y = -(event.clientY / window.innerHeight) * 2 + 1;
-    setMousePosition({ x, y });
-  };
-
-  useEffect(() => {
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  const showModels = scrollProgress <= 0.01 || activeInfo;
-  const positionModel = scrollProgress <= 0.1 || !activeInfo;
+  // Nota: antes se escuchaba `mousemove` y se guardaba en estado, pero no se usaba.
+  // Eso causaba renders en cada movimiento del mouse.
 
   return (
     <>
       <SoftShadows size={25} samples={16} focus={0.5} />
       <ambientLight intensity={0.5} />
-
-      {/* Environment para reflexiones realistas en la moneda */}
-      <Environment preset="city" background={false} blur={0.25} />
-
-      {/* Sistema de iluminación dedicado para la moneda */}
+      {/* Iluminación ambiental local para mantener materiales (sin HDR remoto) */}
+      <Environment resolution={256} background={false}>
+        <Lightformer
+          intensity={2.0}
+          position={[5, 5, 5]}
+          rotation={[0, Math.PI / 4, 0]}
+          scale={[10, 10, 1]}
+        />
+        <Lightformer
+          intensity={1.2}
+          position={[-5, -2, 5]}
+          rotation={[0, -Math.PI / 4, 0]}
+          scale={[8, 8, 1]}
+        />
+      </Environment>
       <CoinLightRig />
-
-      {/* Resplandor ambiental que hace que la moneda irradie luz al espacio */}
       <CoinAmbientGlow />
-
-      {/* Partículas de fondo (más lejanas) para dar profundidad */}
       {coinHasLanded && (
         <IconParticles
           count={6}
@@ -299,10 +257,8 @@ export const Scene = () => {
           opacityMultiplier={0.4}
         />
       )}
+      {coinHasLanded && <IconParticles count={9} />}
 
-      {/* Partículas de íconos hexagonales (primer plano) - aparecen cuando la moneda ha aterrizado */}
-      {coinHasLanded && <IconParticles />}
-      <CombinedGlasses></CombinedGlasses>
       <directionalLight
         position={[5, 5, 5]}
         intensity={1}
@@ -337,151 +293,20 @@ export const Scene = () => {
         shadow-camera-bottom={-10}
       />
 
-      <DynamicStars scrollProgress={scrollProgress} count={4000} />
       <CoinModel scrollProgress={scrollProgress} />
+
+      {/* Modelo combinado de gafas integrado en el canvas principal */}
+      <CombinedGlasses
+        position={[
+          combinedGlasses.position[0],
+          combinedGlasses.position[1],
+          combinedGlasses.position[2] + glassesZOffset,
+        ]}
+        rotation={combinedGlasses.rotation}
+        scale={combinedGlasses.scale}
+        visible={showGlasses}
+        opacity={1}
+      />
     </>
   );
 };
-
-const DynamicStars = ({ scrollProgress, count }) => {
-  const ref = useRef();
-
-  useFrame(() => {
-    if (ref.current) {
-      ref.current.position.y = scrollProgress * 100;
-      ref.current.rotation.x = scrollProgress * 5;
-    }
-  });
-
-  return (
-    <Stars
-      ref={ref}
-      radius={100}
-      depth={300}
-      count={count}
-      factor={1}
-      saturation={0}
-      fade
-      speed={1}
-    />
-  );
-};
-
-// {showModels && (
-//   <>
-//     {/* Cajafuerte: imagen PNG fija detrás, ligada al modelo */}
-//     <group position={positionModel ? [0, 0, -200] : [-10, 0, 10]} rotation={[mousePosition.y * 0.2, mousePosition.x * 0.2, 0]}>
-//       <Model
-//         ref={cajafuerteRef}
-//         position={[0, 0, 0]}
-//         rotation={[0, 0, 0]}
-//         modelType="cajafuerte"
-//       />
-//       <Html
-//         position={[0, 0, -2]} // Ajusta la distancia detrás del modelo
-//         style={{
-//           width: '200px',
-//           height: '200px',
-//           pointerEvents: 'none',
-//           display: 'flex',
-//           justifyContent: 'center',
-//           alignItems: 'center'
-//         }}
-//         center
-//         transform
-//         zIndexRange={[0, 0]}
-//       >
-//         <img src="/chica2.png" alt="Fondo Cajafuerte" style={{width: '100%', height: '100%'}} />
-//       </Html>
-//     </group>
-//   </>
-// )}
-
-// {showModels && (
-//   <>
-//     {/* Maletín: 4 imágenes con parallax detrás, ligadas al modelo */}
-//     <group position={positionModel ? [0, 0, -200] : [-10, -2, 10]} rotation={[0, 18, 0]}>
-//       <Model
-//         ref={maletinRef}
-//         position={[0, 0, 0]}
-//         rotation={[0, 0, 0]}
-//         modelType="maletin"
-//       />
-//       {[1, 2, 3, 4].map((index) => (
-//         <Html
-//           key={index}
-//           position={[
-//             0 + mousePosition.x * (index * 0.5), // Parallax X
-//             0 + mousePosition.y * (index * 0.5), // Parallax Y
-//             -2 - index * 0.3 // Profundidad detrás del modelo
-//           ]}
-//           style={{
-//             width: '150px',
-//             height: '150px',
-//             pointerEvents: 'none',
-//             display: 'flex',
-//             justifyContent: 'center',
-//             alignItems: 'center'
-//           }}
-//           center
-//           transform
-//           zIndexRange={[0, 0]}
-//         >
-//           <img src={`/maletin-bg-${index}.png`} alt={`Parallax ${index}`} style={{width: '100%', height: '100%'}} />
-//         </Html>
-//       ))}
-//     </group>
-//   </>
-// )}
-
-// const DynamicStars = ({ scrollProgress, count }) => {
-//   const ref = useRef();
-
-//   useFrame(() => {
-//     if (ref.current) {
-//       ref.current.position.y = scrollProgress * 100;
-//       ref.current.rotation.x = scrollProgress * 5;
-//     }
-//   });
-
-//   return (
-//     <Stars
-//       ref={ref}
-//       radius={100}
-//       depth={300}
-//       count={count}
-//       factor={1}
-//       saturation={0}
-//       fade
-//       speed={1}
-//     />
-//   );
-// };
-// Ejemplo de cómo mover el grupo desde algún evento:
-// moveModelTo(maletinGroupRef, new THREE.Vector3(0, 0, 0));
-
-// const DynamicStars = ({ scrollProgress, count }) => {
-//   const ref = useRef();
-
-//   useFrame(() => {
-//     if (ref.current) {
-//       ref.current.position.y = scrollProgress * 100;
-//       ref.current.rotation.x = scrollProgress * 5;
-//     }
-//   });
-
-//   return (
-//     <Stars
-//       ref={ref}
-//       radius={100}
-//       depth={300}
-//       count={count}
-//       factor={1}
-//       saturation={0}
-//       fade
-//       speed={1}
-//     />
-//   );
-// };
-// Ejemplo de cómo mover el grupo desde algún evento:
-// moveModelTo(maletinGroupRef, new THREE.Vector3(0, 0, 0));

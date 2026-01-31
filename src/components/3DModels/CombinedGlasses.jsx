@@ -26,7 +26,7 @@ function getNameOrder(name) {
 }
 
 export const CombinedGlasses = ({
-  position = [0, 0, 0],
+  position = [0, 0, -10],
   rotation = [0, 0, 0],
   scale = 1,
   visible = true,

@@ -6,6 +6,7 @@ import { Section } from './components/3DScene/Section';
 import { Scene } from './components/3DScene/Scene';
 import ScrollHandler from './controllers/ScrollHandler';
 import SectionsHTML from './components/SectionsHTML';
+import PreloadModels from './components/PreloadModels';
 import * as THREE from "three";
 
 export default function MainApp() {
@@ -73,6 +74,8 @@ export default function MainApp() {
                 camera={{ position: [0,0,0], fov: 50, near: 1, far: 1000 }}
             >
                 <CameraController />
+                {/* Precarga temprana de modelos GLB dentro del contexto de R3F */}
+                <PreloadModels />
                 <Section>
                     <Scene/>
                 </Section>

@@ -4,10 +4,10 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import PropTypes from "prop-types";
 
-// Precarga
-useGLTF.preload("/glases11.glb");
-useGLTF.preload("/glases22.glb");
-useGLTF.preload("/glases333.glb");
+// Precarga de modelos de glasses (nombres correctos)
+useGLTF.preload("/glas1final.glb");
+useGLTF.preload("/glases222final.glb");
+useGLTF.preload("/glases333final.glb");
 
 function GlassModel({
   url,
