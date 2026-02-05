@@ -1,0 +1,63 @@
+.subTitle {
+  text-align: right;
+  margin-right: 20px;
+  font-size: 19px;
+  margin: 0px;
+  font-weight: 200;
+  font-family: "Nunito Sans";
+}
+
+.subTitle2 {
+  text-align: left;
+  margin-right: 20px;
+  font-size: 19px;
+  margin: 0px;
+  font-weight: 200;
+  font-family: "Nunito Sans";
+}
+
+.title {
+  font-style: italic;
+  font-weight: 200;
+  font-family: "Bai Jamjuree";
+  max-width: 65vw;
+  letter-spacing: 1px;
+}
+
+.text-block {
+  position: fixed;
+  color: white;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-right {
+  top: 19%;
+  right: 4%;
+  gap: 10px;
+}
+
+.bottom-left {
+  bottom: 8%;
+  left: 4%;
+  gap: 30px;
+}
+
+.bottom-right {
+  bottom: 8%;
+  right: 4%;
+  gap: 30px;
+}
+
+.align-end {
+  align-items: flex-end;
+}
+
+.medium-text {
+  font-size: 27px;
+}
+
+.bottom-right .medium-text {
+  max-width: 55vw;
+}

@@ -1,0 +1,156 @@
+/* Contenedor del 60% derecho */
+.second-section-wrapper {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 60%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+/* Caja de contenido centrada dentro del wrapper */
+.second-section-container {
+  max-width: 600px;
+  width: 90%;
+  pointer-events: auto;
+}
+
+.second-title {
+  font-family: inherit;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #000000;
+  margin: 0 0 24px 0;
+}
+
+.second-quote {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #333333;
+  font-style: italic;
+  margin: 0 0 16px 0;
+}
+
+.second-author {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666666;
+  margin: 0;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .second-section-wrapper {
+    width: 60%;
+  }
+
+  .second-section-container {
+    max-width: 520px;
+    width: 85%;
+  }
+
+  .second-title {
+    font-size: 44px;
+  }
+
+  .second-quote {
+    font-size: 17px;
+  }
+
+  .second-author {
+    font-size: 15px;
+  }
+}
+
+/* Mobile Landscape y Tablets pequeñas */
+@media (max-width: 768px) {
+  .second-section-wrapper {
+    width: 100%;
+    right: 0;
+    left: 0;
+  }
+
+  .second-section-container {
+    max-width: 85%;
+    text-align: center;
+  }
+
+  .second-title {
+    font-size: 36px;
+  }
+
+  .second-quote {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .second-author {
+    font-size: 14px;
+  }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+  .second-section-wrapper {
+    width: 100%;
+  }
+
+  .second-section-container {
+    max-width: 90%;
+  }
+
+  .second-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+
+  .second-quote {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+
+  .second-author {
+    font-size: 13px;
+  }
+}
+
+/* Mobile pequeño */
+@media (max-width: 360px) {
+  .second-section-wrapper {
+    width: 100%;
+  }
+
+  .second-title {
+    font-size: 28px;
+  }
+
+  .second-quote {
+    font-size: 14px;
+  }
+
+  .second-author {
+    font-size: 12px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

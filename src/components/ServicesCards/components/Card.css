@@ -1,0 +1,144 @@
+.cardShadow {
+  box-shadow: 10px 10px 23px -6px rgba(0, 0, 0, 0.49);
+  -webkit-box-shadow: 10px 10px 23px -6px rgba(0, 0, 0, 0.49);
+  -moz-box-shadow: 10px 10px 23px -6px rgba(0, 0, 0, 0.49);
+}
+
+.cardContainer {
+  width: 100%;
+  position: relative;
+  z-index: 8;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  
+}
+
+.cardContainer.collapsed {
+  height: 18vh;
+  overflow: visible;
+  cursor: pointer;
+}
+
+.cardContainer.expanded {
+  height: 90%;
+  overflow: hidden;
+  cursor: default;
+}
+
+.cardBackground {
+  border-radius: 14px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.overlayImageWrapper {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9;
+}
+
+.overlayImageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cardContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+
+}
+
+.cardContent.collapsed {
+  padding: 10px;
+  font-size: 10px;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.cardContent.expanded {
+  padding: 30px;
+  justify-content: flex-start;
+  backdrop-filter: blur(40px);
+  height: -webkit-fill-available;
+  box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.5);
+
+}
+
+.cardContent h3 {
+  margin: 0;
+  color: white;
+  font-weight: bold;
+  font-family: "Nunito Sans";
+}
+
+.cardTextExpanded {
+  margin-top: 20px;
+  color: white;
+  font-family: "Bai Jamjuree";
+}
+
+.cardTextExpanded h6 {
+  margin-bottom: 10px;
+}
+
+.expandedImageWrapper {
+  position: absolute;
+  z-index: -1;
+  bottom: -150px;
+  right: -150px;
+  height: 100%;
+  width: 100%;
+}
+
+.expandedImageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cardOverlay{
+ width: 100%;
+ height: 100%; 
+ position: relative;
+ display: flex;
+ justify-content: center;
+}
+
+.cardOverlayImage{
+  width: 74%;
+  position: absolute;
+  top: 10;
+  left: 0;
+  right: -10px;
+  bottom: 0;
+  margin: auto;
+  object-fit: contain;
+}
+
+.cardTitle{
+  font-family: "Nunito Sans";
+  font-size: 14px;
+}
+
+.cardTitle.expanded{
+  font-family: "Nunito Sans";
+  font-size: 44px;
+}
+
+.expandedDescription{
+  max-width: 70%;
+}

@@ -1,0 +1,129 @@
+.hero-feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  margin-top: -120px;
+  perspective: 1200px;
+}
+
+/* ================= ICONO PRINCIPAL ================= */
+
+.hero-feature-card__icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transform-style: preserve-3d;
+  will-change: transform;
+  perspective: 1200px;
+}
+
+/* halo suave */
+.hero-feature-card__icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 235, 59, 0.2) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* icono */
+.hero-feature-card__icon {
+  width: 350px;
+  height: 350px;
+  object-fit: contain;
+
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ================= FLIP ================= */
+
+.hero-feature-card__icon-wrapper.is-flipping .hero-feature-card__icon {
+  transform: rotateY(180deg);
+}
+
+/* ================= CONTENIDO ================= */
+
+.hero-feature-card__content {
+  width: 100%;
+  max-width: 520px;
+}
+
+.hero-feature-card__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 1rem 0;
+}
+
+.hero-feature-card__description {
+  font-size: 18px;
+  font-style: italic;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ================= DIVIDER ================= */
+
+.hero-feature-card__divider {
+  width: 92%;
+  height: 1px;
+  margin: 1.75rem auto 1.25rem auto;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 0, 0, 0.15),
+    transparent
+  );
+}
+
+/* ================= CTA ================= */
+
+.hero-feature-card__cta {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #2d3748;
+  cursor: pointer;
+  position: relative;
+}
+
+
+
+.hero-feature-card__cta:hover::after {
+  opacity: 1;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .hero-feature-card {
+    padding: 1.5rem;
+  }
+
+  .hero-feature-card__description {
+    font-size: 16px;
+  }
+
+  .hero-feature-card__icon {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+

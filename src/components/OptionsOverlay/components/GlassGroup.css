@@ -1,0 +1,33 @@
+.glass-layer {
+    width: auto;
+    position: fixed;
+    height: -webkit-fill-available;
+  }
+  
+  .red-glass {
+    top: 0;
+    right: 0;
+  }
+  
+  .green-glass {
+    right: 0;
+  }
+  
+  .blue-glass {
+    /* default positioning */
+  }
+  
+  .glass-align-right {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .glass-img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    will-change: transform, opacity;
+  }
+
+  

@@ -1,0 +1,46 @@
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: rgb(248, 249, 250);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 1s ease-out, filter 1s ease-out;
+  opacity: 1;
+  filter: blur(0px);
+}
+
+.loading-screen.blur-out {
+  opacity: 0;
+  filter: blur(20px);
+}
+
+.loading-title {
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-weight: 300;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 0.15em;
+  color: #000;
+
+  opacity: 0;
+  transform: translateX(40px);
+  animation: revealFade 2.4s ease forwards;
+}
+
+@keyframes revealFade {
+  0% {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,237 @@
+.carousel-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999999;
+    overflow: hidden;
+  }
+  
+  .category-nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+  }
+  
+  .category-button {
+    cursor: pointer;
+    font-family: 'Bai Jamjuree', sans-serif;
+    font-size: 20px;
+    padding-bottom: 5px;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: normal;
+    border-bottom: none;
+  }
+  
+  .category-button.active {
+    color: white;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+  }
+  
+  .carousel-wrapper {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .carousel-button {
+    position: absolute;
+    z-index: 30;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .carousel-button.prev {
+    left: -5vw;
+  }
+  
+  .carousel-button.next {
+    right: -5vw;
+  }
+  
+  .carousel-card {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .carousel-indicators {
+    position: absolute;
+    bottom: 0px;
+    left: 45%;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.3);
+  }
+  
+  .overlay {
+    position: fixed;
+    color: white;
+    background: linear-gradient(180deg, rgba(14,4,50,1) 0%, rgba(38,11,152,1) 100%);
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999999;
+    
+  }
+  
+  .back-button {
+    position: absolute;
+    top: 11vh;
+    right: 56vw;
+    z-index: 9999999999999;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .main-wrapper {
+    display: flex;
+    padding: 40px 0;
+    width: 100%;
+    height: -webkit-fill-available;
+  }
+  
+  .left-column {
+    width: 35vw;
+    padding: 0 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    z-index: 99999;
+    gap: 20px;
+    position: relative;
+  }
+  
+  .left-column-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(14,4,50,1) 0%, rgba(38,11,152,1) 100%);
+    z-index: -1;
+  }
+  
+  .title-main {
+    font-size: 115px;
+    margin: 0;
+    font-family: "Bai Jamjuree";
+    line-height: 80px;
+  }
+  
+  .title-sub {
+    font-size: 64px;
+    margin: 0;
+    font-family: "Bai Jamjuree";
+    line-height: 1;
+  }
+  
+  .slogan {
+    font-weight: bold;
+    font-size: 20px;
+  }
+  
+  .description {
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    font-family: "Bai Jamjuree";
+  }
+  
+  .cta-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-direction: column;
+  }
+  
+  .btn-contact, .btn-dev {
+    font-size: 20px;
+    border-radius: 8px;
+    padding: 20px 0;
+    font-family: "Nunito Sans";
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: white;
+    box-shadow: -2px -2px 2px 0px rgba(0,0,0,0.25) inset, 2px 2px 2px 0px rgba(255,255,255,0.25) inset;
+  }
+  
+  .btn-contact {
+    background: linear-gradient(4deg, rgba(22,94,126,1) 0%, rgba(27,132,73,1) 87%);
+  }
+  
+  .btn-dev {
+    background: linear-gradient(4deg, rgba(122,56,150,1) 38%, rgba(9,9,240,1));
+  }
+  
+  .right-shadow {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  .right-column {
+    width: 67vw;
+    height: 100%;
+    position: relative;
+  }
+  
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-evenly;
+  }
+  
+  .row {
+    display: flex;
+    flex-direction: column;
+    gap: 8%;
+    height: 30%;
+  }
+  
+  .row-label {
+    font-family: "Bai Jamjuree";
+    margin: 0;
+  }
+  
+  .card-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .card-wrapper {
+    width: 22%;
+    height: 100%;
+    position: relative;
+  }
+  
