@@ -40,6 +40,8 @@ export default function FeaturesList({
                 ${isHovered ? "icon-hovered" : ""}
                 ${isActive ? "icon-active" : ""}
               `}
+              onClick={() => onSelect(feature.id)}
+              style={{ cursor: "pointer" }}
             >
               <img src={feature.hexIcon} alt="" className="icon-img" />
             </div>

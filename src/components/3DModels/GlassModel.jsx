@@ -4,10 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import PropTypes from "prop-types";
 
-// Precarga de modelos
-useGLTF.preload("/glas1final.glb");
-useGLTF.preload("/glases222final.glb");
-useGLTF.preload("/glases333final.glb");
+// ⚡ Preloads centralizados en PreloadModels.jsx — NO duplicar aquí.
 
 /**
  * Componente de modelo de gafas que se renderiza dentro del canvas principal.

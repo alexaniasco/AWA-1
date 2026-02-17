@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import "./HeroFeatureCard.css";
 
@@ -19,9 +19,35 @@ export default function HeroFeatureCard({
   const current = useRef({ rotateX: 0, rotateY: 0 });
   const target = useRef({ rotateX: 0, rotateY: 0 });
   const strength = useRef(1);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" && window.innerWidth <= 768
+  );
 
-  /* ================== TILT + FLOAT (NO SE TOCA) ================== */
+  // Detectar cambios de tamaño de pantalla
   useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  /* ================== TILT + FLOAT (solo en desktop) ================== */
+  useEffect(() => {
+    // En mobile: NO animaciones, todo estático
+    if (isMobile) {
+      if (tiltRef.current) {
+        tiltRef.current.style.transform = "none";
+        tiltRef.current.style.willChange = "auto";
+      }
+      // Resetear valores de animación
+      current.current = { rotateX: 0, rotateY: 0 };
+      target.current = { rotateX: 0, rotateY: 0 };
+      strength.current = 0;
+      return;
+    }
+
     const MAX_ROTATION = 26;
     const LERP = 0.08;
 
@@ -45,9 +71,13 @@ export default function HeroFeatureCard({
       const floatY = Math.sin((time - start) * 0.001) * 10;
 
       current.current.rotateX +=
-        (target.current.rotateX - current.current.rotateX) * LERP * strength.current;
+        (target.current.rotateX - current.current.rotateX) *
+        LERP *
+        strength.current;
       current.current.rotateY +=
-        (target.current.rotateY - current.current.rotateY) * LERP * strength.current;
+        (target.current.rotateY - current.current.rotateY) *
+        LERP *
+        strength.current;
 
       if (tiltRef.current) {
         tiltRef.current.style.transform = `translateY(${floatY}px) rotateX(${current.current.rotateX}deg) rotateY(${current.current.rotateY}deg) translateZ(24px)`;
@@ -62,35 +92,30 @@ export default function HeroFeatureCard({
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(frameId);
     };
-  }, [isTransitioning]);
+  }, [isTransitioning, isMobile]);
 
   return (
-    <div className="hero-feature-card">
-      <motion.div
-      style={{marginBottom: "-20px"}}
-        initial={{ opacity: 0, y: 40, scale: 0.92 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {/* ICONO PRINCIPAL */}
-        <div ref={tiltRef} className="hero-feature-card__icon-wrapper">
+    <motion.div
+      key={title}
+      className="hero-feature-card"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      <div className="hero-feature-card__icon-wrapper">
+        <div ref={isMobile ? null : tiltRef}>
           <img src={image} alt="" className="hero-feature-card__icon" />
         </div>
-      </motion.div>
+      </div>
 
       {/* TEXTO */}
       <div className="hero-feature-card__content">
         <h2 className="hero-feature-card__title">{title}</h2>
         <p className="hero-feature-card__description">{description}</p>
         <div className="hero-feature-card__divider" />
-        <motion.button
-          className="hero-feature-card__cta"
-          animate={{ opacity: isTransitioning ? 0 : 1 }}
-          transition={{ duration: 0.25, delay: 0.6 }}
-        >
-          Ver beneficios
-        </motion.button>
+        <button className="hero-feature-card__cta">Ver beneficios</button>
       </div>
-    </div>
+    </motion.div>
   );
 }

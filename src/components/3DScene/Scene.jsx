@@ -159,6 +159,7 @@ const CoinLightRig = () => {
         decay={2.2}
         castShadow={false}
       />
+
       {/* Luces de "halo" para que irradie poder alrededor - más suaves */}
       <pointLight
         position={[0.0, 0.0, 0.0]}
@@ -213,7 +214,7 @@ export const Scene = () => {
   // Calcular visibilidad de los glases basado en scrollProgress
   // Importante: antes se usaba un end (0.52) distinto al fin de la sección (0.55),
   // eso causaba cortes bruscos entre secciones. Ahora lo dejamos consistente.
-  const isInOptionsScreen = scrollProgress >= 0.35 && scrollProgress < 0.55;
+  const isInOptionsScreen = scrollProgress >= 0.45 && scrollProgress < 0.55;
   // Mantener glasses visibles incluso cuando hay activeInfo (para que la moneda pase por detrás)
   const showGlasses = isInOptionsScreen && !isLeavingOptions;
   // Cuando hay activeInfo, mover los glasses hacia adelante para que la moneda pase por detrás
@@ -291,6 +292,7 @@ export const Scene = () => {
         shadow-camera-top={10}
         shadow-camera-bottom={-10}
       />
+
       <CoinModel scrollProgress={scrollProgress} />
 
       {/* Modelo combinado de gafas integrado en el canvas principal */}

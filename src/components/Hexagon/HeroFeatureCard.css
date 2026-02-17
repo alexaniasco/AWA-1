@@ -113,16 +113,88 @@
 
 @media (max-width: 768px) {
   .hero-feature-card {
-    padding: 1.5rem;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    perspective: none; /* Sin perspectiva 3D en mobile */
+    position: relative; /* Estático */
   }
 
-  .hero-feature-card__description {
-    font-size: 16px;
+  .hero-feature-card__icon-wrapper {
+    margin-bottom: 1.25rem;
+    position: relative; /* Estático */
+    transform: none !important; /* Forzar sin transform */
+    will-change: auto; /* Sin optimizaciones que causen movimiento */
+  }
+
+  .hero-feature-card__icon-wrapper::before {
+    display: none; /* Ocultar halo en mobile */
   }
 
   .hero-feature-card__icon {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
+    transform: none !important; /* Sin transform */
+    transition: none; /* Sin transiciones */
+  }
+
+  .hero-feature-card__content {
+    max-width: 100%;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5rem;
+    position: relative;
+  }
+
+  .hero-feature-card__title {
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+    position: relative;
+    transform: none !important;
+  }
+
+  .hero-feature-card__description {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    margin-bottom: 0;
+    color: #4a5568;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+    position: relative;
+    transform: none !important;
+  }
+
+  .hero-feature-card__divider {
+    display: none;
+  }
+
+  .hero-feature-card__cta {
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
+    margin-top: 1.25rem;
+    text-align: center;
+    color: white;
+    background: #1a202c;
+    border-radius: 99px;
+    font-weight: 600;
+    position: relative;
+    transform: none !important;
+    width: fit-content;
   }
 }
 

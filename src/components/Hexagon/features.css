@@ -142,16 +142,89 @@
   .features {
     flex-direction: column;
     width: 100%;
-  }
-
-  .features__icons,
-  .features__texts {
-    transform: none;
-  }
-
-  .icon-item,
-  .text-item {
+    max-width: 100%;
     justify-content: center;
-    text-align: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 0;
+    perspective: none;
+    position: relative;
+  }
+
+  .features__icons {
+    width: 100%;
+    min-width: 100%;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    align-items: center;
+    transform: none !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }
+
+  .features__icons::-webkit-scrollbar {
+    display: none;
+  }
+
+  .features__texts {
+    display: none;
+  }
+
+  .icon-item {
+    margin-top: 0;
+    height: auto;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    transform: none !important;
+    transform-style: flat;
+    scroll-snap-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .icon-item.icon-left,
+  .icon-item.icon-right {
+    transform: none !important;
+  }
+
+  .icon-img {
+    width: 64px;
+    height: 64px;
+    transform: none !important;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, filter;
+    opacity: 0.6;
+    filter: grayscale(0.4);
+  }
+
+  .icon-active .icon-img {
+    width: 80px;
+    height: 80px;
+    opacity: 1;
+    filter: grayscale(0) drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
+    transform: scale(1.1) !important;
+  }
+
+  .icon-active::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    width: 6px;
+    height: 6px;
+    background: #1a202c;
+    border-radius: 50%;
+  }
+
+  /* Mostrar todos los hexágonos en mobile */
+  .icon-item:nth-child(n+3) {
+    display: flex;
   }
 }

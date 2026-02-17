@@ -1,6 +1,14 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { AppContext } from "./AppContext";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
+import * as THREE from "three";
+
+// Importar PreloadModels para que las precargas a nivel de módulo se ejecuten
+import "../components/PreloadModels";
+
+// ─── Configuración de carga ──────────────────────────────────────────────────
+const MIN_LOADING_TIME_MS = 2500; // Tiempo mínimo de loading (para que la animación se vea)
+const MAX_LOADING_TIME_MS = 10000; // Timeout máximo de seguridad
 
 // Proveedor del contexto
 export const AppProvider = ({ children }) => {
@@ -20,26 +28,83 @@ export const AppProvider = ({ children }) => {
   const [coinHasLanded, setCoinHasLanded] = useState(false);
   const [isLeavingOptions, setIsLeavingOptions] = useState(false);
   const [sectionHover, setSectionHover] = useState("");
-  // Loader liviano: evitamos importar `three/examples/jsm/Addons.js` (muy pesado) para no inflar el bundle.
-  // Si en el futuro querés precargar GLBs, conviene usar `useGLTF.preload()` desde drei.
+
+  // ─── Precarga real: esperar a que THREE.DefaultLoadingManager termine ────
   useEffect(() => {
-    setLoadingProgress(1);
-    const t = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(t);
+    const startTime = Date.now();
+    let finished = false;
+
+    const finishLoading = () => {
+      if (finished) return;
+      finished = true;
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_LOADING_TIME_MS - elapsed);
+      // Esperar al menos MIN_LOADING_TIME_MS para que la animación se vea
+      setTimeout(() => {
+        setLoadingProgress(1);
+        setIsLoading(false);
+      }, remaining);
+    };
+
+    const mgr = THREE.DefaultLoadingManager;
+
+    // Guardar handlers originales
+    const prevOnLoad = mgr.onLoad;
+    const prevOnProgress = mgr.onProgress;
+    const prevOnError = mgr.onError;
+
+    // Rastrear progreso real
+    mgr.onProgress = (url, loaded, total) => {
+      prevOnProgress?.(url, loaded, total);
+      if (total > 0) {
+        setLoadingProgress(loaded / total);
+      }
+    };
+
+    // Cuando TODO se carga, terminar
+    mgr.onLoad = () => {
+      prevOnLoad?.();
+      finishLoading();
+    };
+
+    // En caso de error en algún recurso, no bloquear la app para siempre
+    mgr.onError = (url) => {
+      prevOnError?.(url);
+      console.warn("[Loading] Error cargando:", url);
+    };
+
+    // Timeout de seguridad: si los modelos están cacheados o algo falla,
+    // no mantener el loading indefinidamente
+    const safetyTimeout = setTimeout(finishLoading, MAX_LOADING_TIME_MS);
+
+    // Si ya no hay nada pendiente (todo cacheado), resolver rápido
+    // DefaultLoadingManager.isLoading es false cuando no hay items pendientes
+    const quickCheck = setTimeout(() => {
+      if (!mgr.isLoading) {
+        finishLoading();
+      }
+    }, 500);
+
+    return () => {
+      clearTimeout(safetyTimeout);
+      clearTimeout(quickCheck);
+      mgr.onLoad = prevOnLoad;
+      mgr.onProgress = prevOnProgress;
+      mgr.onError = prevOnError;
+    };
   }, []);
 
-  const moveCameraTo = (position, lookAt = [0, 0, 0]) => {
+  const moveCameraTo = useCallback((position, lookAt = [0, 0, 0]) => {
     setCameraTarget(position);
     setCameraLookAtTarget(lookAt);
-  };
+  }, []);
 
-  const moveModelTo = (modelRef, targetPosition, duration = 1500) => {
+  const moveModelTo = useCallback((modelRef, targetPosition, duration = 1500) => {
     if (!modelRef.current) return;
 
     const startPosition = modelRef.current.position.clone();
     const startTime = performance.now();
 
-    // Función de easing para suavizar la animación
     const easeInOutQuad = (t) => {
       return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     };
@@ -49,7 +114,6 @@ export const AppProvider = ({ children }) => {
       const rawProgress = Math.min(elapsed / duration, 1);
       const easedProgress = easeInOutQuad(rawProgress);
 
-      // Interpolación suave con easing
       modelRef.current.position.lerpVectors(
         startPosition,
         targetPosition,
@@ -62,14 +126,12 @@ export const AppProvider = ({ children }) => {
     };
 
     requestAnimationFrame(animateMove);
-  };
+  }, []);
 
-  // Reactotron removido para producción/optimización de bundle.
-  const handleOptionClick = (position, label, modelRef) => {
+  const handleOptionClick = useCallback((position, label, modelRef) => {
     setActiveInfo(label);
     setCameraTarget(position);
 
-    // Asegurarnos de que el lookAt apunte al modelo seleccionado
     if (modelRef?.current) {
       const modelPosition = modelRef.current.position;
       setCameraLookAtTarget([
@@ -78,7 +140,7 @@ export const AppProvider = ({ children }) => {
         modelPosition.z,
       ]);
     }
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -115,6 +177,9 @@ export const AppProvider = ({ children }) => {
       coinHasLanded,
       isLeavingOptions,
       sectionHover,
+      moveCameraTo,
+      moveModelTo,
+      handleOptionClick,
     ]
   );
 

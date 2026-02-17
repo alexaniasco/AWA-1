@@ -1,30 +1,35 @@
 /**
- * Componente de precarga de modelos GLB.
- * Se monta dentro del Canvas de Three.js para asegurar que los modelos estén listos
- * antes de que se necesiten, evitando lag cuando aparecen por primera vez.
- * 
- * Este componente debe montarse dentro del contexto de React Three Fiber (dentro de <Canvas>).
- * Las precargas se ejecutan automáticamente cuando este módulo se importa.
+ * Punto centralizado de precarga de TODOS los modelos GLB de la aplicación.
+ * Se ejecuta al importar este módulo (antes de que React monte nada).
+ *
+ * ⚡ NO agregar useGLTF.preload() en otros archivos — solo aquí.
  */
 import { useGLTF } from "@react-three/drei";
 
-// Precargar modelos de glasses usados en GlassGroup/GlassModel3D
-useGLTF.preload("/glas1final.glb");
-useGLTF.preload("/glases222final.glb");
-useGLTF.preload("/glases333final.glb");
+// ─── Lista completa de modelos ───────────────────────────────────────────────
+const ALL_MODELS = [
+  // Moneda principal (usada en CoinModel)
+  "/coinpintada.glb",
+  // Glasses combinados (desktop y mobile)
+  "/GLASES222.glb",
+  "/newglasscel.glb",
+  // Glasses individuales (usados en GlassGroup / GlassModel3D)
+  "/glas1final.glb",
+  "/glases222final.glb",
+  "/glases333final.glb",
+];
 
-// Precargar modelo usado en CombinedGlasses
-useGLTF.preload("/GLASES222.glb");
+// Ejecutar precargas inmediatamente al importar el módulo
+ALL_MODELS.forEach((url) => useGLTF.preload(url));
+
+/** Lista de URLs precargadas (útil para debug) */
+export const PRELOADED_MODELS = ALL_MODELS;
 
 /**
- * Componente invisible que se monta dentro del Canvas para iniciar la precarga.
- * Las precargas ya se ejecutaron en el nivel superior del módulo cuando se importó.
- * Esto asegura que los recursos estén listos antes de que los componentes los necesiten.
+ * Componente vacío que se monta dentro del Canvas.
+ * Su única función es asegurar que este módulo se importe (y por tanto
+ * que las precargas a nivel de módulo se ejecuten).
  */
-export const PreloadModels = () => {
-  // Las precargas ya se ejecutaron en el nivel superior del módulo
-  // Este componente solo asegura que el módulo se importe y las precargas se activen
-  return null;
-};
+export const PreloadModels = () => null;
 
 export default PreloadModels;

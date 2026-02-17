@@ -1,343 +1,206 @@
+/* eslint-disable react/no-unknown-property */
 import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useContext, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import PropTypes from "prop-types";
 import { AppContext } from "../../context/AppContext";
+import { setupCoinMaterials } from "./coin/setupMaterials";
+import {
+  SPEED,
+  SCROLL,
+  MOBILE_BREAKPOINT,
+  getResponsiveScale,
+  getPositions,
+  easeOutCubic,
+} from "./coin/config";
 
-const COIN_LIGHT_LAYER = 1;
+// ⚡ Preloads centralizados en PreloadModels.jsx — NO duplicar aquí.
 
-// =========================
-// VELOCIDADES DE MOVIMIENTO
-// =========================
-const FALL_SPEED = 0.012; // caída inicial
-const ENTRY_SPEED = 0.02; // 🔹 primer desplazamiento lateral
-const MOVE_SPEED = 0.02; // recorrido general
-const FINAL_SPEED = 0.05; // salida final
-const ENTRY_SCROLL_LIMIT = 0.07;
-// =========================
-
-const tempMatrix = new THREE.Matrix4();
-const tempQuat = new THREE.Quaternion();
-const offsetQuat = new THREE.Quaternion().setFromEuler(
-  new THREE.Euler(0, Math.PI / 2, 0)
+// Objetos reutilizables para evitar allocations en useFrame
+const _mat4 = new THREE.Matrix4();
+const _quat = new THREE.Quaternion();
+const _offsetQuat = new THREE.Quaternion().setFromEuler(
+  new THREE.Euler(0, Math.PI / 2, 0),
 );
+const _vec3 = new THREE.Vector3();
 
-const getResponsiveScale = () => {
-  const baseScale = 3;
-  const scaleFactor = Math.min(window.innerWidth, window.innerHeight) / 800;
-  return baseScale * scaleFactor;
-};
-
-// Detectar si estamos en móvil
-const isMobile = () => {
-  return window.innerWidth <= 768;
-};
-
-// =========================
-// PARTICULAS TIPO RÍO
-// =========================
-const PARTICLE_COUNT = 300;
-
-const createParticles = () => {
-  const arr = [];
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const side = Math.random() > 0.5 ? -1 : 1;
-    arr.push({
-      pos: new THREE.Vector3(
-        side * (10 + Math.random() * 5),
-        Math.random() * 4 - 2,
-        Math.random() * 2 - 1
-      ),
-      vel: new THREE.Vector3(
-        -side * (4 + Math.random() * 2),
-        1 + Math.random() * 1.5,
-        0
-      ),
-      life: 0,
-    });
-  }
-  return arr;
-};
+// ─── Componente ──────────────────────────────────────────────────────────────
 
 export const CoinModel = ({ scrollProgress }) => {
   const { coinRef: ref, activeInfo, setCoinHasLanded } = useContext(AppContext);
-
-  const { scene } = useGLTF("/coinhd.glb");
+  const { scene } = useGLTF("/coinpintada.glb");
   const { camera } = useThree();
 
-  const [isManuallyMoved, setIsManuallyMoved] = useState(false);
   const [hasLanded, setHasLanded] = useState(false);
-  const [particles, setParticles] = useState([]);
-  
-  // Ref para trackear si ya se inicializó (evita re-inicialización en HMR)
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" && window.innerWidth <= MOBILE_BREAKPOINT,
+  );
+
   const hasInitialized = useRef(false);
-  // Ref para la última posición de scroll conocida
-  const lastScrollProgress = useRef(0);
+  const lastScroll = useRef(0);
+  const targetPos = useRef(new THREE.Vector3());
 
-  // Posiciones para desktop
-  const startPosition = new THREE.Vector3(2.5, 15, -3);
-  const centerPosition = new THREE.Vector3(0, 0, -3);
-  const entryPosition = new THREE.Vector3(2.6, 0, -2);
-  
-  // Posiciones para móvil (siempre centradas horizontalmente)
-  const mobileStartPosition = new THREE.Vector3(0, 15, -5);
-  const mobileCenterPosition = new THREE.Vector3(0, 0, -3);
-  const mobileEntryPosition = new THREE.Vector3(0, -1, -2);
-  
-  const targetPosition = useRef(new THREE.Vector3());
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
-
-  // =========================
-  // Detectar cambios de tamaño de pantalla
-  // =========================
+  // ─── Responsive ────────────────────────────────────────────────────────
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobileDevice(isMobile());
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const check = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  // =========================
-  // Inicialización de moneda y escena
-  // =========================
+  // Posiciones según dispositivo
+  const pos = getPositions(isMobile);
+
+  // ─── Inicialización (una sola vez) ─────────────────────────────────────
   useEffect(() => {
     if (hasInitialized.current) return;
     hasInitialized.current = true;
 
-    // Usar posición inicial según el dispositivo
-    const initialPosition = isMobile() ? mobileStartPosition : startPosition;
-    if (ref.current) ref.current.position.copy(initialPosition);
+    setupCoinMaterials(scene);
+
+    if (ref.current) {
+      ref.current.position.copy(pos.start);
+    }
 
     setTimeout(() => {
       setHasLanded(true);
       setCoinHasLanded?.(true);
     }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scene, setCoinHasLanded]);
 
-  // =========================
-  // Reset cuando volvemos al inicio (scrollProgress cerca de 0)
-  // =========================
+  // ─── Reset al volver al inicio ────────────────────────────────────────
   useEffect(() => {
-    // Detectar cuando volvemos al inicio desde una posición avanzada
-    const wasAdvanced = lastScrollProgress.current > 0.1;
-    const isAtStart = scrollProgress < 0.02;
-    
+    const wasAdvanced = lastScroll.current > SCROLL.WAS_ADVANCED;
+    const isAtStart = scrollProgress < SCROLL.RESET_THRESHOLD;
+
     if (wasAdvanced && isAtStart && ref.current) {
-      // Reset de la posición de la moneda
-      const initialPosition = isMobile() ? mobileStartPosition : startPosition;
-      ref.current.position.copy(initialPosition);
-      
-      // Reset de la escala
+      ref.current.position.copy(pos.start);
+
       const s = getResponsiveScale();
       ref.current.scale.set(s, s, s);
-      
-      // Reset de la rotación
       ref.current.rotation.set(0, 0, 0);
-      
-      // Reset del estado de aterrizaje para que vuelva a animar
+
       setHasLanded(false);
       setCoinHasLanded?.(false);
-      setIsManuallyMoved(false);
-      
-      // Volver a activar el aterrizaje después de un delay
+
       setTimeout(() => {
         setHasLanded(true);
         setCoinHasLanded?.(true);
       }, 500);
     }
-    
-    lastScrollProgress.current = scrollProgress;
+
+    lastScroll.current = scrollProgress;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollProgress, setCoinHasLanded]);
 
-  // Posiciones del recorrido según dispositivo
-  const desktopPositions = [
-    new THREE.Vector3(2.6, 0, -2),
-    new THREE.Vector3(-2.5, 0, 1),
-    new THREE.Vector3(-3.5, 0, 1),
-    new THREE.Vector3(0, 0, 20),
-  ];
+  // ─── Frame loop ────────────────────────────────────────────────────────
+  useFrame((_state, delta) => {
+    const coin = ref.current;
+    if (!coin) return;
 
-  // En móvil: recorrido vertical centrado (solo cambia Y y Z)
-  const mobilePositions = [
-    new THREE.Vector3(10, 0, -2),      // Después del aterrizaje, centrada
-    new THREE.Vector3(0, -1.3, 1),     // Baja un poco
-    new THREE.Vector3(0, -4, 5),     // Baja más
-    new THREE.Vector3(0, 0, 20),     // Final
-  ];
-  
-  const modelPositions = isMobileDevice ? mobilePositions : desktopPositions;
-
-  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-
-  // =========================
-  // Loop principal de frame
-  // =========================
-  useFrame((state, delta) => {
-    if (!ref.current) return;
-
-    // =========================
-    // INFO ACTIVA
-    // =========================
+    // Cuando hay info activa: solo mirar a cámara
     if (activeInfo) {
-      tempMatrix.lookAt(ref.current.position, camera.position, ref.current.up);
-      tempQuat.setFromRotationMatrix(tempMatrix);
-      tempQuat.multiply(offsetQuat);
-      ref.current.quaternion.slerp(tempQuat, 0.08);
+      lookAtCamera(coin, camera);
       return;
     }
 
-    if (!isManuallyMoved) {
-      //Transicion de la seccion de opciones a la screen final
-      if (scrollProgress >= 0.9) {
-        const scaleFactor = 1 + (scrollProgress - 0.9) * 2200;
-        ref.current.scale.lerp(
-          new THREE.Vector3(scaleFactor, scaleFactor, scaleFactor),
-          0.03
-        );
-        const liftAmount = (scrollProgress - 0.82) *2 // Sube hasta 0.2 unidades
-        const baseY = 2; // Posición base Y
-        const targetY = baseY + liftAmount;
-        ref.current.position.y = THREE.MathUtils.lerp(
-          ref.current.position.y,
-          targetY,
-          0.03
-        );
-      } else {
-        const s = getResponsiveScale();
-        ref.current.scale.lerp(new THREE.Vector3(s, s, s), 0.1);
-      }
+    // Escala
+    updateScale(coin, scrollProgress, isMobile);
 
-      // POSICIÓN
-      const currentCenterPosition = isMobileDevice ? mobileCenterPosition : centerPosition;
-      const currentEntryPosition = isMobileDevice ? mobileEntryPosition : entryPosition;
-      
-      if (!hasLanded) {
-        ref.current.position.lerp(currentCenterPosition, FALL_SPEED);
-        // Forzar centrado en móvil
-        if (isMobileDevice) ref.current.position.x = 0;
-      } else if (scrollProgress < ENTRY_SCROLL_LIMIT) {
-        ref.current.position.lerp(currentEntryPosition, ENTRY_SPEED);
-        // Forzar centrado en móvil
-        if (isMobileDevice) ref.current.position.x = 0;
-      } else {
-        const isFinalSection = scrollProgress >= 0.4;
-        if (!isFinalSection) {
-          const index = Math.min(
-            Math.floor(scrollProgress * (modelPositions.length - 1)),
-            modelPositions.length - 2
-          );
-          const start = modelPositions[index];
-          const end = modelPositions[index + 1];
-          const rawProgress = scrollProgress * (modelPositions.length - 1);
-          const localProgress = Math.min(Math.max(rawProgress - index, 0), 1);
-          const easedProgress = easeOutCubic(localProgress);
-          targetPosition.current.lerpVectors(start, end, easedProgress);
-          ref.current.position.lerp(targetPosition.current, MOVE_SPEED);
-          // Forzar centrado en móvil durante el recorrido
-          if (isMobileDevice) ref.current.position.x = 0;
-        } else {
-          //aca se edita cuando la moneda esta al centro de las opciones
-          // Mantener Y actual cuando scrollProgress >= 0.9 (se ajusta en la sección de rotación)
-          if (scrollProgress >= 0.9) {
-            const currentY = ref.current.position.y;
-            // En móvil siempre centrada horizontalmente
-            const finalX = 0;
-            ref.current.position.lerp(new THREE.Vector3(finalX, currentY, 10), FINAL_SPEED);
-            if (isMobileDevice) ref.current.position.x = 0;
-          } else {
-            // En móvil siempre centrada horizontalmente
-            const finalX = 0;
-            ref.current.position.lerp(new THREE.Vector3(finalX, 0, 10), FINAL_SPEED);
-            if (isMobileDevice) ref.current.position.x = 0;
-          }
-        }
-      }
+    // Posición
+    updatePosition(coin, scrollProgress, hasLanded, isMobile, pos, targetPos);
 
-      // ROTACIÓN
-      if (scrollProgress >= 0.82) {
-        // Cuando scrollProgress >= 0.82, orientar la moneda hacia la cámara
-        tempMatrix.lookAt(
-          ref.current.position,
-          camera.position,
-          ref.current.up
-        );
-        tempQuat.setFromRotationMatrix(tempMatrix);
-        tempQuat.multiply(offsetQuat);
-        ref.current.quaternion.slerp(tempQuat, 0.08);
-        
-        // Subir la moneda levemente mientras se orienta hacia la cámara
-        if (scrollProgress >= 0.82) {
-          const liftAmount = (scrollProgress - 0.82) * 0.5; // Sube hasta 0.2 unidades
-          const baseY = 0; // Posición base Y
-          const targetY = baseY + liftAmount;
-          ref.current.position.y = THREE.MathUtils.lerp(
-            ref.current.position.y,
-            targetY,
-            0.05
-          );
-          // Forzar centrado en móvil durante la rotación
-          if (isMobileDevice) ref.current.position.x = 0;
-        }
-      } else {
-        // Rotación normal antes de llegar a 0.9
-        ref.current.rotation.y += delta * 0.5;
-        ref.current.rotation.x += delta * 0.2;
-      }
-    }
-
-    // =========================
-    // ACTUALIZAR PARTICULAS
-    // =========================
-    if (particles.length > 0) {
-      const positions = [];
-      let alive = false;
-      particles.forEach((p) => {
-        if (p.life < 3) {
-          alive = true;
-          p.pos.addScaledVector(p.vel, delta);
-          p.life += delta;
-          positions.push(p.pos.x, p.pos.y, p.pos.z);
-        }
-      });
-
-      if (!alive) setParticles([]); // Termina efecto
-
-      if (pointsRef.current) {
-        pointsRef.current.geometry.setAttribute(
-          "position",
-          new THREE.Float32BufferAttribute(positions, 3)
-        );
-        pointsRef.current.geometry.attributes.position.needsUpdate = true;
-      }
-    }
+    // Rotación
+    updateRotation(coin, scrollProgress, camera, delta);
   });
 
-  const moveCoinTo = (position) => {
-    if (!ref.current || activeInfo) return;
-    setIsManuallyMoved(true);
-    ref.current.position.copy(position);
-  };
-
-  const pointsRef = useRef();
-
-  return (
-    <>
-      <primitive ref={ref} object={scene} scale={2} />
-
-      {particles.length > 0 && (
-        <points ref={pointsRef}>
-          <bufferGeometry />
-          <pointsMaterial color="#00ffff" size={0.05} />
-        </points>
-      )}
-    </>
-  );
+  return <primitive ref={ref} object={scene} scale={2} />;
 };
 
 CoinModel.propTypes = {
   scrollProgress: PropTypes.number.isRequired,
 };
+
+// ─── Helpers de animación (fuera del componente para evitar recreaciones) ────
+
+/** Orienta la moneda hacia la cámara con slerp suave. */
+function lookAtCamera(coin, camera) {
+  _mat4.lookAt(coin.position, camera.position, coin.up);
+  _quat.setFromRotationMatrix(_mat4).multiply(_offsetQuat);
+  coin.quaternion.slerp(_quat, SPEED.LOOK_AT);
+}
+
+/** En móvil, escala extra en la sección de opciones (glasses). */
+const MOBILE_OPTIONS_SCALE = 1.35;
+
+/** Actualiza la escala: zoom en la sección final, responsiva el resto. */
+function updateScale(coin, scroll, isMobile) {
+  if (scroll >= SCROLL.ZOOM_START) {
+    const factor = 1 + (scroll - SCROLL.ZOOM_START) * 2200;
+    coin.scale.lerp(_vec3.set(factor, factor, factor), 0.03);
+  } else {
+    let s = getResponsiveScale();
+    // En móvil, agrandar un poco la moneda en la sección de opciones (glasses)
+    if (isMobile && scroll >= SCROLL.FINAL_SECTION) {
+      s *= MOBILE_OPTIONS_SCALE;
+    }
+    coin.scale.lerp(_vec3.set(s, s, s), SPEED.SCALE);
+  }
+}
+
+/** Lerp factor suave para centrar X en mobile (en vez de snap a 0). */
+const MOBILE_X_LERP = 0.04;
+
+/** Actualiza la posición según el scroll y el estado de aterrizaje. */
+function updatePosition(coin, scroll, hasLanded, isMobile, pos, targetRef) {
+  if (scroll >= SCROLL.ZOOM_START) {
+    // Sección zoom: subir en Y
+    const lift = (scroll - SCROLL.LOOK_AT_START) * 2;
+    coin.position.y = THREE.MathUtils.lerp(coin.position.y, 2 + lift, 0.03);
+  } else if (!hasLanded) {
+    // Caída inicial
+    coin.position.lerp(pos.center, SPEED.FALL);
+    if (isMobile)
+      coin.position.x = THREE.MathUtils.lerp(coin.position.x, 0, MOBILE_X_LERP);
+  } else if (scroll < SCROLL.ENTRY_LIMIT) {
+    // Primer desplazamiento
+    coin.position.lerp(pos.entry, SPEED.ENTRY);
+    if (isMobile)
+      coin.position.x = THREE.MathUtils.lerp(coin.position.x, 0, MOBILE_X_LERP);
+  } else if (scroll < SCROLL.FINAL_SECTION) {
+    // Recorrido por el path (el path ya define X, no forzamos a 0)
+    interpolatePath(coin, scroll, pos.path, targetRef);
+  } else {
+    // Sección de opciones (0.4 – 0.9)
+    // En móvil: mover a la izquierda para encajar en el semicírculo de los vidrios
+    const optionsX = isMobile ? -1.4 : 0;
+    const y = scroll >= SCROLL.LOOK_AT_START ? coin.position.y : 0;
+    coin.position.lerp(_vec3.set(optionsX, y, 10), SPEED.FINAL);
+  }
+}
+
+/** Interpola posición a lo largo del path según scroll. */
+function interpolatePath(coin, scroll, path, targetRef) {
+  const segCount = path.length - 1;
+  const idx = Math.min(Math.floor(scroll * segCount), segCount - 1);
+  const local = THREE.MathUtils.clamp(scroll * segCount - idx, 0, 1);
+  targetRef.current.lerpVectors(path[idx], path[idx + 1], easeOutCubic(local));
+  coin.position.lerp(targetRef.current, SPEED.MOVE);
+}
+
+/** Actualiza rotación: mira a cámara en sección final, gira libre el resto. */
+function updateRotation(coin, scroll, camera, delta) {
+  if (scroll >= SCROLL.LOOK_AT_START) {
+    lookAtCamera(coin, camera);
+
+    // Levitar ligeramente
+    const lift = (scroll - SCROLL.LOOK_AT_START) * 0.5;
+    coin.position.y = THREE.MathUtils.lerp(coin.position.y, lift, 0.05);
+  } else {
+    // Rotación libre
+    coin.rotation.y += delta * 0.5;
+    coin.rotation.x += delta * 0.2;
+  }
+}

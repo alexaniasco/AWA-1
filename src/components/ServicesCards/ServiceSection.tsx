@@ -62,7 +62,7 @@ export const ServiceSection = () => {
     const handleWheel = (event: WheelEvent) => {
       // Siempre prevenir que el scroll llegue al handler principal
       event.stopPropagation();
-      
+
       if (isScrollingRef.current) {
         event.preventDefault();
         return;
@@ -71,7 +71,7 @@ export const ServiceSection = () => {
       const scrollTop = container.scrollTop;
       const viewportHeight = window.innerHeight;
       const scrollThreshold = 50; // Umbral para detectar cambio de sección
-      
+
       const isScrollingDown = event.deltaY > 0;
       const isScrollingUp = event.deltaY < 0;
 
@@ -116,7 +116,7 @@ export const ServiceSection = () => {
     const handleScroll = () => {
       const scrollTop = container.scrollTop;
       const viewportHeight = window.innerHeight;
-      
+
       // Determinar en qué sección estamos basado en el scroll
       if (scrollTop < viewportHeight / 2) {
         setCurrentSection(0);
@@ -135,14 +135,16 @@ export const ServiceSection = () => {
   }, [currentSection]);
 
   return (
-    // Main Background: Smooth gradient from image - #0D0432 to #260B98
-    <div 
+    <div
       ref={scrollContainerRef}
-      className="h-screen overflow-y-auto overflow-x-hidden w-full bg-[radial-gradient(circle_at_center,_#260B98_100%,_#0D0432_100%)] text-white font-sans selection:bg-pink-500 selection:text-white snap-y snap-mandatory"
-      style={{ scrollBehavior: "smooth" }}
+      className="h-screen overflow-y-auto overflow-x-hidden w-full bg-transparent text-white font-sans selection:bg-pink-500 selection:text-white snap-y snap-mandatory"
+      style={{ scrollBehavior: "smooth", backgroundColor: "transparent" }}
     >
       {/* Background Decor Elements */}
-      <div className="absolute top-0 right-0 w-1/2 sm:w-1/3 pointer-events-none overflow-hidden z-0" style={{ height: '200vh' }}>
+      <div
+        className="absolute top-0 right-0 w-1/2 sm:w-1/3 pointer-events-none overflow-hidden z-0"
+        style={{ height: "200vh" }}
+      >
         <Diamond
           size={30}
           className="absolute top-[8%] right-[30%] text-pink-500/30 blur-[1px] rotate-12 sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px]"
@@ -168,238 +170,256 @@ export const ServiceSection = () => {
       {/* Primera Sección */}
       <div className="min-h-screen snap-start flex items-center">
         <div className="container mx-auto px-6 md:px-12 h-full flex flex-col lg:flex-row items-center justify-center gap-10 ">
-        {/* === LEFT COLUMN === */}
-        <div className="w-full lg:w-[35%] flex flex-col z-10  gap-8">
-          {/* Brand Title */}
-          <div className="w-full flex">
-            <img
-              src="/lgo.png"
-              alt="logo"
-              className="w-full object-contain max-w-full"
-              style={{ imageRendering: "auto" }}
-            />
-          </div>
+          {/* === LEFT COLUMN === */}
+          <div className="w-full lg:w-[35%] flex flex-col z-10  gap-8">
+            {/* Brand Title */}
+            <div className="w-full flex">
+              <img
+                src="/lgo.png"
+                alt="logo"
+                className="w-full object-contain max-w-full"
+                style={{ imageRendering: "auto" }}
+              />
+            </div>
 
-          {/* Description Text */}
-          <div className="space-y-5 text-gray-200 text-[15px] sm:text-[16px] lg:text-[17px] leading-relaxed font-normal">
-            <p>
-              <strong className="font-bold text-white">
-                Conectamos talento, tecnología y oportunidad
-              </strong>{" "}
-              para cubrir las necesidades de la industria IT. Somos el{" "}
-              <strong className="font-bold text-white">refuerzo</strong> de las
-              empresas y startups, como tambien el{" "}
-              <strong className="font-bold text-white">respaldo</strong> de los
-              profecionales.
-            </p>
-          </div>
+            {/* Description Text */}
+            <div className="space-y-5 text-gray-200 text-[15px] sm:text-[16px] lg:text-[17px] leading-relaxed font-normal">
+              <p>
+                <strong className="font-bold text-white">
+                  Conectamos talento, tecnología y oportunidad
+                </strong>{" "}
+                para cubrir las necesidades de la industria IT. Somos el{" "}
+                <strong className="font-bold text-white">refuerzo</strong> de
+                las empresas y startups, como tambien el{" "}
+                <strong className="font-bold text-white">respaldo</strong> de
+                los profecionales.
+              </p>
+            </div>
 
-          {/* CTA Button */}
-          <div className="w-full relative group cursor-pointer mt-2">
-            <div className="absolute inset-0 bg-white/40 rounded-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-            <div className="relative border border-white/80 rounded-xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[14px] sm:text-[15px] lg:text-[16px] font-medium text-gray-100">
-                  Hablemos por whatsApp o
-                </span>
-                <span className="text-[14px] sm:text-[15px] lg:text-[16px] font-medium text-gray-100">
-                  coordinemos un Meet.
-                </span>
+            {/* CTA Button */}
+            <div className="w-full relative group cursor-pointer mt-2">
+              <div className="absolute inset-0 bg-white/40 rounded-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <div className="relative border border-white/80 rounded-xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[14px] sm:text-[15px] lg:text-[16px] font-medium text-gray-100">
+                    Hablemos por whatsApp o
+                  </span>
+                  <span className="text-[14px] sm:text-[15px] lg:text-[16px] font-medium text-gray-100">
+                    coordinemos un Meet.
+                  </span>
+                </div>
+                <Headphones className="text-white w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 opacity-90 stroke-[1.5]" />
               </div>
-              <Headphones className="text-white w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 opacity-90 stroke-[1.5]" />
-            </div>
-          </div>
-        </div>
-
-        {/* === DIVIDER LINE === - Fixed position between columns */}
-        <img
-          src="/divider.png"
-          alt="divider"
-          className="hidden lg:block fixed w-[30px] h-screen z-30 object-contain pointer-events-none"
-          style={{
-            left: '44vw', // Posicionado entre las columnas (35% + padding)
-            top: 0,
-          }}
-        ></img>
-     
-
-        {/* === RIGHT COLUMN === */}
-        <div className="w-full lg:w-[55%] flex flex-col items-start relative z-10 pt-4 sm:pt-6 lg:pt-0 pl-0 lg:pl-20">
-          {/* Header & Filters */}
-          <div className="w-full mb-6 sm:mb-8 lg:mb-12">
-            <h3 className="text-[1.5rem] sm:text-[2rem] md:text-[2.3rem] lg:text-[2.7rem] font-light italic text-white mb-3 sm:mb-4 tracking-wide drop-shadow-lg leading-tight">
-              Nuestros servicios
-              <br className="sm:hidden" />
-              <span className="ml-0 sm:ml-0">segun</span>
-            </h3>
-
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              {/* Filter Pills */}
-              <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-1 rounded-lg border border-white/60 text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal tracking-wider hover:bg-white/40 uppercase transition-all bg-white/20">
-                <User size={14} strokeWidth={1.5} className="sm:w-4 sm:h-4 flex-shrink-0" /> <span>PROFECIONALES</span>
-              </button>
-
-              <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-1 rounded-lg border border-white/60 text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal tracking-wider hover:bg-white/40 uppercase transition-all bg-white/20">
-                <Building2 size={14} strokeWidth={1.5} className="sm:w-4 sm:h-4 flex-shrink-0" /> <span>EMPRESAS</span>
-              </button>
-
-              <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-1 rounded-lg bg-white/20 border border-white text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal tracking-wider hover:bg-white/40 uppercase transition-all shadow-lg backdrop-blur-sm">
-                <Diamond size={14} strokeWidth={1.5} className="sm:w-4 sm:h-4 flex-shrink-0" /> <span>EXCLUSIVOS</span>
-              </button>
             </div>
           </div>
 
-          {/* HEXAGON INTERACTION AREA */}
-          <div className="w-full relative flex flex-col items-start">
-            {/* Top Section: Big Hexagon + Text */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10 mb-4 sm:mb-6 w-full items-start">
-              <div className="relative shrink-0 flex flex-col gap-4 sm:gap-5 lg:gap-6 items-center sm:items-start">
-                <AnimatePresence mode="popLayout">
-                  <motion.div
-                    key={activeService.id}
-                    layoutId={`container-${activeService.id}`}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3 }}
-                    className="scale-80 sm:scale-90 lg:scale-100"
-                  >
-                    <Hexagon
-                      size="lg"
-                      isActive={true}
-                      layoutId={`hex-${activeService.id}`}
+          {/* === DIVIDER LINE === - Fixed position between columns */}
+          <img
+            src="/divider.png"
+            alt="divider"
+            className="hidden lg:block fixed w-[30px] h-screen z-30 object-contain pointer-events-none"
+            style={{
+              left: "44vw", // Posicionado entre las columnas (35% + padding)
+              top: 0,
+            }}
+          ></img>
+
+          {/* === RIGHT COLUMN === */}
+          <div className="w-full lg:w-[55%] flex flex-col items-start relative z-10 pt-4 sm:pt-6 lg:pt-0 pl-0 lg:pl-20">
+            {/* Header & Filters */}
+            <div className="w-full mb-6 sm:mb-8 lg:mb-12">
+              <h3 className="text-[1.5rem] sm:text-[2rem] md:text-[2.3rem] lg:text-[2.7rem] font-light italic text-white mb-3 sm:mb-4 tracking-wide drop-shadow-lg leading-tight">
+                Nuestros servicios
+                <br className="sm:hidden" />
+                <span className="ml-0 sm:ml-0">segun</span>
+              </h3>
+
+              <div className="flex flex-wrap gap-2 sm:gap-3">
+                {/* Filter Pills */}
+                <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-1 rounded-lg border border-white/60 text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal tracking-wider hover:bg-white/40 uppercase transition-all bg-white/20">
+                  <User
+                    size={14}
+                    strokeWidth={1.5}
+                    className="sm:w-4 sm:h-4 flex-shrink-0"
+                  />{" "}
+                  <span>PROFECIONALES</span>
+                </button>
+
+                <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-1 rounded-lg border border-white/60 text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal tracking-wider hover:bg-white/40 uppercase transition-all bg-white/20">
+                  <Building2
+                    size={14}
+                    strokeWidth={1.5}
+                    className="sm:w-4 sm:h-4 flex-shrink-0"
+                  />{" "}
+                  <span>EMPRESAS</span>
+                </button>
+
+                <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-1 rounded-lg bg-white/20 border border-white text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] font-normal tracking-wider hover:bg-white/40 uppercase transition-all shadow-lg backdrop-blur-sm">
+                  <Diamond
+                    size={14}
+                    strokeWidth={1.5}
+                    className="sm:w-4 sm:h-4 flex-shrink-0"
+                  />{" "}
+                  <span>EXCLUSIVOS</span>
+                </button>
+              </div>
+            </div>
+
+            {/* HEXAGON INTERACTION AREA */}
+            <div className="w-full relative flex flex-col items-start">
+              {/* Top Section: Big Hexagon + Text */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10 mb-4 sm:mb-6 w-full items-start">
+                <div className="relative shrink-0 flex flex-col gap-4 sm:gap-5 lg:gap-6 items-center sm:items-start">
+                  <AnimatePresence mode="popLayout">
+                    <motion.div
+                      key={activeService.id}
+                      layoutId={`container-${activeService.id}`}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                      className="scale-80 sm:scale-90 lg:scale-100"
                     >
-                      <activeService.icon
-                        strokeWidth={1.2}
-                        size={110}
-                        className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] w-[80px] h-[80px] sm:w-[90px] sm:h-[90px] lg:w-[110px] lg:h-[110px]"
-                      />
-                    </Hexagon>
-                  </motion.div>
-                </AnimatePresence>
-                <div className="flex gap-2 sm:gap-3 items-end">
-                  {otherServices.map((service, index) => (
-                    <div
-                      key={service.id}
-                      onClick={() => setActiveServiceId(service.id)}
-                      className="cursor-pointer scale-90 sm:scale-95 lg:scale-100"
-                      style={{ marginBottom: index === 1 ? "10px" : "0" }}
-                    >
-                      <Hexagon size="sm" layoutId={`hex-${service.id}`}>
-                        <service.icon
-                          strokeWidth={1.5}
-                          size={36}
-                          className="text-white opacity-90 w-[28px] h-[28px] sm:w-[32px] sm:h-[32px] lg:w-[36px] lg:h-[36px]"
+                      <Hexagon
+                        size="lg"
+                        isActive={true}
+                        layoutId={`hex-${activeService.id}`}
+                      >
+                        <activeService.icon
+                          strokeWidth={1.2}
+                          size={110}
+                          className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] w-[80px] h-[80px] sm:w-[90px] sm:h-[90px] lg:w-[110px] lg:h-[110px]"
                         />
                       </Hexagon>
-                    </div>
-                  ))}
+                    </motion.div>
+                  </AnimatePresence>
+                  <div className="flex gap-2 sm:gap-3 items-end">
+                    {otherServices.map((service, index) => (
+                      <div
+                        key={service.id}
+                        onClick={() => setActiveServiceId(service.id)}
+                        className="cursor-pointer scale-90 sm:scale-95 lg:scale-100"
+                        style={{ marginBottom: index === 1 ? "10px" : "0" }}
+                      >
+                        <Hexagon size="sm" layoutId={`hex-${service.id}`}>
+                          <service.icon
+                            strokeWidth={1.5}
+                            size={36}
+                            className="text-white opacity-90 w-[28px] h-[28px] sm:w-[32px] sm:h-[32px] lg:w-[36px] lg:h-[36px]"
+                          />
+                        </Hexagon>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                <motion.div
+                  key={`text-${activeService.id}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col text-left mt-2 sm:mt-4 lg:mt-8 w-full sm:w-auto"
+                >
+                  <h4 className="text-[1.5rem] sm:text-[2rem] md:text-[2.25rem] lg:text-[2.75rem] font-bold mb-2 sm:mb-3 lg:mb-4 text-white leading-tight drop-shadow-lg">
+                    {activeService.title}
+                  </h4>
+                  <p className="text-[0.9rem] sm:text-[0.95rem] md:text-[1.05rem] lg:text-[1.15rem] font-light italic text-gray-200 leading-relaxed max-w-full sm:max-w-[340px]">
+                    {activeService.description}
+                  </p>
+                </motion.div>
               </div>
 
-              <motion.div
-                key={`text-${activeService.id}`}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4 }}
-                className="flex flex-col text-left mt-2 sm:mt-4 lg:mt-8 w-full sm:w-auto"
-              >
-                <h4 className="text-[1.5rem] sm:text-[2rem] md:text-[2.25rem] lg:text-[2.75rem] font-bold mb-2 sm:mb-3 lg:mb-4 text-white leading-tight drop-shadow-lg">
-                  {activeService.title}
-                </h4>
-                <p className="text-[0.9rem] sm:text-[0.95rem] md:text-[1.05rem] lg:text-[1.15rem] font-light italic text-gray-200 leading-relaxed max-w-full sm:max-w-[340px]">
-                  {activeService.description}
-                </p>
-              </motion.div>
-            </div>
-
-            {/* Bottom Section: Small Hexagons + Link */}
-            <div className="flex flex-row items-center w-full gap-4 sm:gap-6 lg:gap-10 mt-2 sm:mt-4">
-              <div className="flex-grow flex justify-end pr-2">
-                <a className="flex items-center gap-2 text-lg font-light italic text-gray-100 hover:text-white transition-colors group">
-                  Ver beneficios
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
+              {/* Bottom Section: Small Hexagons + Link */}
+              <div className="flex flex-row items-center w-full gap-4 sm:gap-6 lg:gap-10 mt-2 sm:mt-4">
+                <div className="flex-grow flex justify-end pr-2">
+                  <a className="flex items-center gap-2 text-lg font-light italic text-gray-100 hover:text-white transition-colors group">
+                    Ver beneficios
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
-      
+
       {/* Segunda Sección */}
       <div className="min-h-screen snap-start flex items-center">
         <div className="container h-full flex items-center justify-center p-4 sm:p-6 md:p-8">
-        <div className="relative w-full h-[500px] sm:h-[550px] md:h-[600px] flex flex-col md:flex-row overflow-hidden rounded-lg">
-          {/* Left Panel: Typography */}
-          <div className="relative z-20 w-full md:w-[45%] flex flex-col justify-center px-6 sm:px-8 md:px-16 py-8 sm:py-10 md:py-12">
-            {/* Top Gradient Overlay for subtle lighting */}
+          <div className="relative w-full h-[500px] sm:h-[550px] md:h-[600px] flex flex-col md:flex-row overflow-hidden rounded-lg">
+            {/* Left Panel: Typography */}
+            <div className="relative z-20 w-full md:w-[45%] flex flex-col justify-center px-6 sm:px-8 md:px-16 py-8 sm:py-10 md:py-12">
+              {/* Top Gradient Overlay for subtle lighting */}
 
-            <div className="relative z-10 flex flex-col h-full justify-center space-y-4 sm:space-y-6 md:space-y-8">
-              {/* Quote Block */}
-              <div className="relative">
-                {/* Opening Quote Mark */}
-                <span className="absolute -top-2 sm:-top-3 md:-top-4 -left-4 sm:-left-5 md:-left-6 text-4xl sm:text-5xl md:text-6xl font-black text-metallic opacity-80 leading-none">
-                  ”
-                </span>
+              <div className="relative z-10 flex flex-col h-full justify-center space-y-4 sm:space-y-6 md:space-y-8">
+                {/* Quote Block */}
+                <div className="relative">
+                  {/* Opening Quote Mark */}
+                  <span className="absolute -top-2 sm:-top-3 md:-top-4 -left-4 sm:-left-5 md:-left-6 text-4xl sm:text-5xl md:text-6xl font-black text-metallic opacity-80 leading-none">
+                    ”
+                  </span>
 
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black uppercase tracking-wide leading-[1.1] text-metallic">
-                  Las excusas
-                  <br />
-                  de hoy son el
-                  <br />
-                  futuro de
-                  <br />
-                  mañana.{" "}
-                  <span className="inline-block align-top text-2xl sm:text-3xl md:text-4xl">”</span>
-                </h1>
-              </div>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black uppercase tracking-wide leading-[1.1] text-metallic">
+                    Las excusas
+                    <br />
+                    de hoy son el
+                    <br />
+                    futuro de
+                    <br />
+                    mañana.{" "}
+                    <span className="inline-block align-top text-2xl sm:text-3xl md:text-4xl">
+                      ”
+                    </span>
+                  </h1>
+                </div>
 
-              {/* Secondary Text */}
-              <p className="text-base sm:text-lg md:text-xl text-gray-300 font-light italic tracking-wider mt-2 sm:mt-3 md:mt-4">
-                No llegues tarde.
-              </p>
-
-              {/* Attribution */}
-              <div className="mt-auto pt-4 sm:pt-6 md:pt-8">
-                <p className="text-gray-400 text-xs sm:text-sm md:text-base font-light tracking-wide">
-                  — Apolo Web Agency
+                {/* Secondary Text */}
+                <p className="text-base sm:text-lg md:text-xl text-gray-300 font-light italic tracking-wider mt-2 sm:mt-3 md:mt-4">
+                  No llegues tarde.
                 </p>
+
+                {/* Attribution */}
+                <div className="mt-auto pt-4 sm:pt-6 md:pt-8">
+                  <p className="text-gray-400 text-xs sm:text-sm md:text-base font-light tracking-wide">
+                    — Apolo Web Agency
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right Panel: Rocket Illustration */}
-          <div className="relative w-full md:w-[55%]  flex items-center justify-center overflow-hidden">
-       
+            {/* Right Panel: Rocket Illustration */}
+            <div className="relative w-full md:w-[55%]  flex items-center justify-center overflow-hidden">
+              {/* The Rocket Graphic - Animated from left to right behind divider */}
+              <motion.div
+                className="relative w-[120%] h-auto scale-90 sm:scale-95 md:scale-100"
+                style={{ zIndex: 5 }}
+                initial={{ x: "-150%", opacity: 0 }}
+                animate={{
+                  x: currentSection === 1 ? "-12%" : "-150%",
+                  opacity: currentSection === 1 ? 1 : 0,
+                }}
+                transition={{
+                  duration: 2.5,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
+              >
+                <img
+                  src="/rocket.svg"
+                  alt="rocket"
+                  className="w-full h-full object-contain"
+                />
+                {/* <RocketIcon /> */}
+              </motion.div>
 
-            {/* The Rocket Graphic - Animated from left to right behind divider */}
-            <motion.div
-              className="relative w-[120%] h-auto scale-90 sm:scale-95 md:scale-100"
-              style={{ zIndex: 5 }}
-              initial={{ x: "-150%", opacity: 0 }}
-              animate={{
-                x: currentSection === 1 ? "-12%" : "-150%",
-                opacity: currentSection === 1 ? 1 : 0,
-              }}
-              transition={{
-                duration: 2.5,
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
-            >
-              <img src="/rocket.svg" alt="rocket" className="w-full h-full object-contain" />
-              {/* <RocketIcon /> */}
-            </motion.div>
-
-            {/* Bottom Right Arrow Button */}
-            <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8">
-              <button className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform hover:scale-110 active:scale-95 cursor-pointer group">
-                <ArrowUp className="text-black w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 stroke-[2.5]" />
-              </button>
+              {/* Bottom Right Arrow Button */}
+              <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8">
+                <button className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform transition-transform hover:scale-110 active:scale-95 cursor-pointer group">
+                  <ArrowUp className="text-black w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 stroke-[2.5]" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

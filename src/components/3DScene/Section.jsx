@@ -8,6 +8,7 @@ export const Section = ({ children }) => {
     activeInfo,
     setCameraTarget,
     cameraTarget,
+    cameraLookAtTarget,
   } = useContext(AppContext);
   return (
     <>
@@ -17,6 +18,7 @@ export const Section = ({ children }) => {
         setCameraTarget={setCameraTarget}
         scrollProgress={scrollProgress}
         cameraTarget={cameraTarget}
+        cameraLookAtTarget={cameraLookAtTarget}
       />
       {children}
     </>

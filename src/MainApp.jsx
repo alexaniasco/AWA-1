@@ -1,56 +1,45 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import { Canvas } from "@react-three/fiber";
 import { Section } from "./components/3DScene/Section";
 import { Scene } from "./components/3DScene/Scene";
 import ScrollHandler from "./controllers/ScrollHandler";
 import SectionsHTML from "./components/SectionsHTML";
-import PreloadModels from "./components/PreloadModels";
 import * as THREE from "three";
 
+// Importar para que las precargas a nivel de módulo se ejecuten inmediatamente
+import "./components/PreloadModels";
+
 export default function MainApp() {
-  // Función para cambiar el z-index de todos los canvas
-  const updateCanvasZIndex = () => {
-    // Seleccionar todos los elementos canvas
-    const canvasElements = document.querySelectorAll("canvas");
-
-    // Cambiar el z-index de cada canvas a 10
-    canvasElements.forEach((canvas) => {
-      canvas.style.zIndex = "1";
-    });
-  };
-  // Nuevo useEffect para cambiar el z-index de los canvas
+  // Z-index de canvas (evitar conflicto con HTML overlay)
   useEffect(() => {
-    // Ejecutar inmediatamente
-    updateCanvasZIndex();
-
-    // También ejecutar después de un pequeño retraso para asegurar que los canvas estén renderizados
-    const timeoutId = setTimeout(updateCanvasZIndex, 500);
-
-    // Limpiar timeout en desmontaje
-    return () => clearTimeout(timeoutId);
+    const update = () => {
+      document.querySelectorAll("canvas").forEach((c) => {
+        c.style.zIndex = "1";
+      });
+    };
+    update();
+    const t = setTimeout(update, 500);
+    return () => clearTimeout(t);
   }, []);
+
   return (
     <div
       style={{
         height: "2400vh",
         width: "100vw",
-        // backgroundColor: "black",
         position: "relative",
       }}
     >
-      <Navbar
-      //   isTransitioning={isTransitioning}
-      //   setIsTransitioning={setIsTransitioning}
-      />
+      <Navbar />
+
       <Canvas
-        // frameloop="always"
         gl={{
-          // autoClear:true,
           powerPreference: "high-performance",
+          antialias: true,
         }}
+        dpr={[1, 1.5]} // Limitar DPR en pantallas retina para mejor rendimiento
         onCreated={({ gl }) => {
-          // Exposure aumentado para que la moneda irradie más poder y luz
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.toneMappingExposure = 1.35;
           gl.outputColorSpace = THREE.SRGBColorSpace;
@@ -59,17 +48,19 @@ export default function MainApp() {
           width: "100vw",
           height: "100vh",
           position: "fixed",
-          background: "#f8f9fa", // Blanco suave, cálido y luminoso (no puro para no cansar la vista)
-          zIndex: 20, // Cambiado directamente aquí también
+          background: "#f8f9fa",
+          zIndex: 20,
         }}
-        // camera={{ position: [0, 0, 3], fov: 50, near: 0.1, far: 1000 }} // Cámara más cerca al inicio
-
         camera={{ position: [0, 0, 0], fov: 50, near: 1, far: 1000 }}
       >
-        <Section>
-          <Scene />
-        </Section>
+        {/* Suspense captura la carga de todos los modelos/texturas dentro del Canvas */}
+        <Suspense fallback={null}>
+          <Section>
+            <Scene />
+          </Section>
+        </Suspense>
       </Canvas>
+
       <ScrollHandler />
       <SectionsHTML />
     </div>
