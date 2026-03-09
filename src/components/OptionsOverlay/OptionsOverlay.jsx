@@ -60,6 +60,7 @@ export const OptionsOverlay = ({ onOptionClick }) => {
     <motion.div
       style={{
         position: "fixed",
+        padding: "20px 20px",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",

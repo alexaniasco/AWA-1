@@ -6,14 +6,8 @@ import * as THREE from "three";
 import PropTypes from "prop-types";
 import { AppContext } from "../../context/AppContext";
 import { setupCoinMaterials } from "./coin/setupMaterials";
-import {
-  SPEED,
-  SCROLL,
-  MOBILE_BREAKPOINT,
-  getResponsiveScale,
-  getPositions,
-  easeOutCubic,
-} from "./coin/config";
+import { SPEED, SCROLL } from "./coin/config";
+import { getResponsiveScale, getPositions, easeOutCubic } from "./coin/config";
 
 // ⚡ Preloads centralizados en PreloadModels.jsx — NO duplicar aquí.
 
@@ -21,36 +15,27 @@ import {
 const _mat4 = new THREE.Matrix4();
 const _quat = new THREE.Quaternion();
 const _offsetQuat = new THREE.Quaternion().setFromEuler(
-  new THREE.Euler(0, Math.PI / 2, 0),
+  new THREE.Euler(0, Math.PI / 1, 0),
 );
 const _vec3 = new THREE.Vector3();
 
 // ─── Componente ──────────────────────────────────────────────────────────────
 
-export const CoinModel = ({ scrollProgress }) => {
+const CoinModel = ({ scrollProgress, deviceConfig = {} }) => {
   const { coinRef: ref, activeInfo, setCoinHasLanded } = useContext(AppContext);
-  const { scene } = useGLTF("/coinpintada.glb");
+  const { scene } = useGLTF("/COIN4KA.glb");
   const { camera } = useThree();
 
   const [hasLanded, setHasLanded] = useState(false);
-  const [isMobile, setIsMobile] = useState(
-    () =>
-      typeof window !== "undefined" && window.innerWidth <= MOBILE_BREAKPOINT,
-  );
+  const { isMobile, isTablet } = deviceConfig;
+  const windowWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
 
   const hasInitialized = useRef(false);
   const lastScroll = useRef(0);
   const targetPos = useRef(new THREE.Vector3());
 
-  // ─── Responsive ────────────────────────────────────────────────────────
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   // Posiciones según dispositivo
-  const pos = getPositions(isMobile);
+  const pos = getPositions(windowWidth);
 
   // ─── Inicialización (una sola vez) ─────────────────────────────────────
   useEffect(() => {
@@ -58,7 +43,18 @@ export const CoinModel = ({ scrollProgress }) => {
     hasInitialized.current = true;
 
     setupCoinMaterials(scene);
+    // 🔥 AJUSTE CLAVE PARA THREE.JS
+    scene.traverse((child) => {
+      if (child.isMesh && child.material) {
+        child.material.envMapIntensity = 2.2; // Más reflexión
+        // En móvil/tablet: TODOS los materiales reciben tratamiento de vidrio
+        // En desktop: solo los que tengan "glass"/"frosted"/"vidrio" en el nombre
 
+        child.material.metalness = 1; // Oro real
+        child.material.roughness = 0.25; // No tan oscuro
+        child.material.needsUpdate = true;
+      }
+    });
     if (ref.current) {
       ref.current.position.copy(pos.start);
     }
@@ -107,16 +103,24 @@ export const CoinModel = ({ scrollProgress }) => {
     }
 
     // Escala
-    updateScale(coin, scrollProgress, isMobile);
+    updateScale(coin, scrollProgress, isMobile, isTablet);
 
     // Posición
-    updatePosition(coin, scrollProgress, hasLanded, isMobile, pos, targetPos);
+    updatePosition(
+      coin,
+      scrollProgress,
+      hasLanded,
+      isMobile,
+      isTablet,
+      pos,
+      targetPos,
+    );
 
     // Rotación
-    updateRotation(coin, scrollProgress, camera, delta);
+    updateRotation(coin, scrollProgress, camera, delta, isMobile);
   });
 
-  return <primitive ref={ref} object={scene} scale={2} />;
+  return <primitive ref={ref} object={scene} scale={1} />;
 };
 
 CoinModel.propTypes = {
@@ -136,14 +140,14 @@ function lookAtCamera(coin, camera) {
 const MOBILE_OPTIONS_SCALE = 1.35;
 
 /** Actualiza la escala: zoom en la sección final, responsiva el resto. */
-function updateScale(coin, scroll, isMobile) {
+function updateScale(coin, scroll, isMobile, isTablet) {
   if (scroll >= SCROLL.ZOOM_START) {
-    const factor = 1 + (scroll - SCROLL.ZOOM_START) * 2200;
+    const factor = 1 + (scroll - SCROLL.ZOOM_START) * 1000;
     coin.scale.lerp(_vec3.set(factor, factor, factor), 0.03);
   } else {
     let s = getResponsiveScale();
-    // En móvil, agrandar un poco la moneda en la sección de opciones (glasses)
-    if (isMobile && scroll >= SCROLL.FINAL_SECTION) {
+    // En móvil/tablet, agrandar un poco la moneda en la sección de opciones (glasses)
+    if ((isMobile || isTablet) && scroll >= SCROLL.FINAL_SECTION) {
       s *= MOBILE_OPTIONS_SCALE;
     }
     coin.scale.lerp(_vec3.set(s, s, s), SPEED.SCALE);
@@ -151,10 +155,18 @@ function updateScale(coin, scroll, isMobile) {
 }
 
 /** Lerp factor suave para centrar X en mobile (en vez de snap a 0). */
-const MOBILE_X_LERP = 0.04;
+const MOBILE_X_LERP = 0.1;
 
 /** Actualiza la posición según el scroll y el estado de aterrizaje. */
-function updatePosition(coin, scroll, hasLanded, isMobile, pos, targetRef) {
+function updatePosition(
+  coin,
+  scroll,
+  hasLanded,
+  isMobile,
+  isTablet,
+  pos,
+  targetRef,
+) {
   if (scroll >= SCROLL.ZOOM_START) {
     // Sección zoom: subir en Y
     const lift = (scroll - SCROLL.LOOK_AT_START) * 2;
@@ -174,10 +186,8 @@ function updatePosition(coin, scroll, hasLanded, isMobile, pos, targetRef) {
     interpolatePath(coin, scroll, pos.path, targetRef);
   } else {
     // Sección de opciones (0.4 – 0.9)
-    // En móvil: mover a la izquierda para encajar en el semicírculo de los vidrios
-    const optionsX = isMobile ? -1.4 : 0;
-    const y = scroll >= SCROLL.LOOK_AT_START ? coin.position.y : 0;
-    coin.position.lerp(_vec3.set(optionsX, y, 10), SPEED.FINAL);
+    // Usar posición options según dispositivo desde la configuración
+    coin.position.lerp(pos.options, SPEED.FINAL);
   }
 }
 
@@ -191,16 +201,28 @@ function interpolatePath(coin, scroll, path, targetRef) {
 }
 
 /** Actualiza rotación: mira a cámara en sección final, gira libre el resto. */
-function updateRotation(coin, scroll, camera, delta) {
+function updateRotation(coin, scroll, camera, delta, isMobile) {
   if (scroll >= SCROLL.LOOK_AT_START) {
     lookAtCamera(coin, camera);
 
     // Levitar ligeramente
     const lift = (scroll - SCROLL.LOOK_AT_START) * 0.5;
     coin.position.y = THREE.MathUtils.lerp(coin.position.y, lift, 0.05);
+
+    // En mobile, centrar la moneda en X durante la última sección
+    if (isMobile && scroll >= SCROLL.ZOOM_START) {
+      coin.position.x = THREE.MathUtils.lerp(coin.position.x, 0, 0.05);
+    }
   } else {
     // Rotación libre
     coin.rotation.y += delta * 0.5;
     coin.rotation.x += delta * 0.2;
   }
 }
+
+export default CoinModel;
+
+CoinModel.propTypes = {
+  scrollProgress: PropTypes.number,
+  deviceConfig: PropTypes.object,
+};

@@ -1,26 +1,41 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
 import "./HeroFeatureCard.css";
+import "./HeroFeatureCard-dots.css";
 
 interface HeroFeatureCardProps {
   title: string;
   description: string;
   image: string;
+  section: string;
   isTransitioning?: boolean;
+  cards: {
+    id: string;
+    hero: { title: string; description: string; image: string };
+  }[];
+  activeIndex: number;
+  onDotClick: (index: number) => void;
 }
 
 export default function HeroFeatureCard({
   title,
   description,
   image,
+  section,
   isTransitioning = false,
+  cards,
+  activeIndex,
+  onDotClick,
 }: HeroFeatureCardProps) {
+  const { scrollToSection } = useContext(AppContext);
   const tiltRef = useRef<HTMLDivElement>(null);
   const current = useRef({ rotateX: 0, rotateY: 0 });
   const target = useRef({ rotateX: 0, rotateY: 0 });
   const strength = useRef(1);
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.innerWidth <= 768
+    typeof window !== "undefined" && window.innerWidth <= 768,
   );
 
   // Detectar cambios de tamaño de pantalla
@@ -98,23 +113,59 @@ export default function HeroFeatureCard({
     <motion.div
       key={title}
       className="hero-feature-card"
+      data-section={section}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div className="hero-feature-card__icon-wrapper">
-        <div ref={isMobile ? null : tiltRef}>
-          <img src={image} alt="" className="hero-feature-card__icon" />
+      <div className="hero-feature-card__icon-container">
+        <div className="hero-feature-card__icon-wrapper">
+          <div ref={isMobile ? null : tiltRef} className="hexagon-stack">
+            <img
+              src="/luzelipse.svg"
+              alt=""
+              className="hero-feature-card__glow"
+            />
+            <img src={image} alt="" className="hero-feature-card__icon" />
+          </div>
         </div>
       </div>
 
       {/* TEXTO */}
       <div className="hero-feature-card__content">
+        {/* PUNTOS DE ÍNDICE */}
+        {isMobile && (
+          <div className="hero-feature-card__dots">
+            {cards.map((card, index) => (
+              <button
+                key={card.id}
+                className={`hero-feature-card__dot ${index === activeIndex ? "active" : ""}`}
+                onClick={() => onDotClick(index)}
+                aria-label={`Ir a slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
         <h2 className="hero-feature-card__title">{title}</h2>
         <p className="hero-feature-card__description">{description}</p>
-        <div className="hero-feature-card__divider" />
-        <button className="hero-feature-card__cta">Ver beneficios</button>
+        <div className="hero-feature-card__divider-line" />
+        <button
+          className="hero-feature-card__cta"
+          onClick={() => scrollToSection(0.99)}
+          style={{
+            backgroundColor:
+              section === "EXCLUSIVO"
+                ? "#4156B5"
+                : section === "PROFESIONAL"
+                  ? "#8E4CA8"
+                  : section === "EMPRESA"
+                    ? "#4B7E8E"
+                    : "transparent",
+          }}
+        >
+          Ver servicios
+        </button>
       </div>
     </motion.div>
   );

@@ -43,13 +43,11 @@ const pickZ = ({ zMin, zMax, closeChance = 0.25, closeBoost = 3.5 }) => {
 
 // Partículas de íconos: pocas, aleatorias, flotando verticalmente de abajo hacia arriba.
 export const IconParticles = ({
-  // Pocas partículas, pero cubriendo todo el ancho del viewport en total (no "amontonadas").
   count = 9,
-  // Profundidad donde viven los íconos: SIEMPRE detrás de la moneda (moneda Z va de -3 a 10).
   zMin = -35,
   zMax = -18,
-  // Multiplicador de opacidad para simular distancia (1.0 = normal, 0.5 = más tenue)
   opacityMultiplier = 1.0,
+  deviceConfig = {},
 }) => {
   const { coinHasLanded, scrollProgress } = useContext(AppContext);
   const textures = useTexture(ICON_URLS);
@@ -66,18 +64,19 @@ export const IconParticles = ({
   const prevInFadeZone = useRef(false);
   const escapingBoost = useRef(0);
 
+  const anisotropy = deviceConfig?.isMobile ? 2 : 8;
+
   useEffect(() => {
-    // Asegura que los PNG se vean "nítidos" y con color correcto.
     textures.forEach((tex) => {
       if (!tex) return;
       tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = 8;
+      tex.anisotropy = anisotropy;
       tex.minFilter = THREE.LinearMipmapLinearFilter;
       tex.magFilter = THREE.LinearFilter;
       tex.generateMipmaps = true;
       tex.needsUpdate = true;
     });
-  }, [textures]);
+  }, [textures, anisotropy]);
 
   useEffect(() => {
     // Capturar eventos de wheel para controlar dirección de partículas

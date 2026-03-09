@@ -4,7 +4,6 @@ import MainApp from "./MainApp";
 import { ServiceCardProvider } from "./components/ServicesCards/hooks/ServiceCardContext";
 
 export default function App() {
-
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
@@ -15,8 +14,7 @@ export default function App() {
   return (
     <AppProvider>
       <ServiceCardProvider>
-
-      <MainApp/>
+        <MainApp />
       </ServiceCardProvider>
     </AppProvider>
   );

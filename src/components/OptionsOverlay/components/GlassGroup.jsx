@@ -20,7 +20,7 @@ const GlassGroup = memo(({ activeInfo, sectionHover }) => {
       {/* PROFESIONAL */}
       <AnimatePresence>
         {!activeInfo && scrollProgress < 0.47 && !isLeavingOptions && (
-          <motion.div style={{ position: 'fixed', inset: 0, zIndex: 21 }}>
+          <motion.div style={{ position: "fixed", inset: 0, zIndex: 21 }}>
             <GlassModel3D
               url="/glas1final.glb"
               isHovered={sectionHover === "PROFESIONAL"}
@@ -35,7 +35,7 @@ const GlassGroup = memo(({ activeInfo, sectionHover }) => {
       {/* EMPRESA */}
       <AnimatePresence>
         {!activeInfo && scrollProgress < 0.49 && !isLeavingOptions && (
-          <motion.div style={{ position: 'fixed', inset: 0, zIndex: 21 }}>
+          <motion.div style={{ position: "fixed", inset: 0, zIndex: 21 }}>
             <GlassModel3D
               url="/glases222final.glb"
               isHovered={sectionHover === "EMPRESA"}
@@ -50,7 +50,7 @@ const GlassGroup = memo(({ activeInfo, sectionHover }) => {
       {/* EXCLUSIVO */}
       <AnimatePresence>
         {!activeInfo && scrollProgress < 0.52 && !isLeavingOptions && (
-          <motion.div style={{ position: 'fixed', inset: 0, zIndex: 21 }}>
+          <motion.div style={{ position: "fixed", inset: 0, zIndex: 21 }}>
             <GlassModel3D
               url="/glases333final.glb"
               isHovered={sectionHover === "EXCLUSIVO"}

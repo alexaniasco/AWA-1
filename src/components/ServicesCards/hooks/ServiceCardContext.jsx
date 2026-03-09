@@ -1,26 +1,21 @@
 // src/components/ServiceCards/useServiceCardState.js
 import { useState, useEffect } from "react";
-import { DataServices } from "../data/data";
-import { ServicesContext } from "./ServicesContext"; 
+import { ServicesContext } from "./ServicesContext";
 
-
-export const ServiceCardProvider = ({children}) => {
+export const ServiceCardProvider = ({ children }) => {
   const [expandedCard, setExpandedCard] = useState(null);
   const [showContainer, setShowContainer] = useState(true);
-  const [showLeftColumnBackground, setShowLeftColumnBackground] = useState(true);
+  const [showLeftColumnBackground, setShowLeftColumnBackground] =
+    useState(true);
   const [leftColumnZIndex, setLeftColumnZIndex] = useState(1);
   const [selectedCard, setSelectedCard] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [previousIndex, setPreviousIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
-
-
- 
-
   const handleBack = () => {
     setExpandedCard(null);
-    setSelectedCard(null)
+    setSelectedCard(null);
     setTimeout(() => {
       setShowContainer(true);
       setTimeout(() => {
@@ -30,10 +25,8 @@ export const ServiceCardProvider = ({children}) => {
     }, 500);
   };
 
-
-
-  const handleCardClick = async (section, index,card) => {
-    setSelectedCard({ section, index ,card});
+  const handleCardClick = async (section, index, card) => {
+    setSelectedCard({ section, index, card });
     setCurrentIndex(index);
     setShowLeftColumnBackground(false);
     setLeftColumnZIndex(-10); // Aumentar z-index para que las tarjetas pasen por encima
@@ -41,18 +34,17 @@ export const ServiceCardProvider = ({children}) => {
       setShowContainer(false);
       setTimeout(() => {
         setCurrentIndex(index);
-        setExpandedCard({ section, index ,card});
+        setExpandedCard({ section, index, card });
       }, 500);
     }, 1200);
   };
 
-  
   const handleCategoryChange = (newCategory) => {
-    console.log("no entra",selectedCard)
+    console.log("no entra", selectedCard);
     if (expandedCard && expandedCard.section !== newCategory) {
-      console.log("entra")
+      console.log("entra");
       setExpandedCard({ section: newCategory, index: 0 });
-     
+
       setCurrentIndex(0);
     }
   };
@@ -120,7 +112,6 @@ export const ServiceCardProvider = ({children}) => {
     };
   };
 
-
   return (
     <ServicesContext.Provider
       value={{
@@ -142,7 +133,6 @@ export const ServiceCardProvider = ({children}) => {
         setDirection,
         setCurrentIndex,
         setPreviousIndex,
-        DataServices,
         handleCategoryChange,
       }}
     >

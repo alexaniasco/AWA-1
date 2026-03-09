@@ -10,22 +10,45 @@ export default function Section({ handleBack, position = "right", section }) {
   const allFeatures = data.features || [];
 
   const [activeFeature, setActiveFeature] = useState(
-    allFeatures.find((f) => f.id === "A7") || allFeatures[0]
+    allFeatures.find((f) => f.id === "A7") || allFeatures[0],
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.innerWidth <= 768
+    typeof window !== "undefined" && window.innerWidth <= 768,
   );
+  const [isTablet, setIsTablet] = useState(
+    typeof window !== "undefined" &&
+      window.innerWidth > 768 &&
+      window.innerWidth <= 900,
+  );
+
+  // Calcular índice activo
+  const activeIndex = allFeatures.findIndex((f) => f.id === activeFeature.id);
 
   // Detectar cambios de tamaño de pantalla
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsMobile(width <= 768);
+      setIsTablet(width > 768 && width <= 900);
     };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
   }, []);
+
+  const handleDotClick = (index) => {
+    if (isTransitioning || index === activeIndex) return;
+    const clickedFeature = allFeatures[index];
+    if (!clickedFeature) return;
+
+    setIsTransitioning(true);
+    setActiveFeature(clickedFeature);
+
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 600);
+  };
 
   const handleButtonClick = (clickedId) => {
     if (isTransitioning) return;
@@ -45,54 +68,61 @@ export default function Section({ handleBack, position = "right", section }) {
       initial={isMobile ? {} : { opacity: 0 }}
       animate={isMobile ? {} : { opacity: 1 }}
       transition={isMobile ? { duration: 0 } : { duration: 0.3 }}
-      className={`motion-section ${position}`}
+      className={`motion-section ${!isMobile ? position : ""}`}
     >
-      <div className="section-bg">
-        <img src={data.background} alt="" />
-      </div>
-
-      <div className="section-content">
-        <img
-          onClick={handleBack}
-          className="back-arrow"
-          src="/BackArrowWhite.svg"
-          alt="Volver"
-        />
-        <div className="section-inner">
-          <header className="section-header">
-            <img
-              style={{
-                position: "absolute",
-                top: 60,
-                left: -30,
-                width: "150px",
-                height: "150px",
-              }}
-              src="/pointer.svg"
-              alt="Logo"
-              className="pointer"
+      <div
+        className="section-content"
+        style={{
+          justifyContent: isTablet
+            ? section === "EXCLUSIVO"
+              ? "flex-end"
+              : "flex-start"
+            : undefined,
+        }}
+      >
+        <div className="back-button-container" onClick={handleBack}>
+          <svg
+            className="back-arrow-svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 12H5M5 12L12 19M5 12L12 5"
+              stroke="black"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-            <h1 style={{ fontFamily: "Bai Jamjuree" }}>
-              {data.ui?.title || ""}
-            </h1>
-            <p>{data.ui?.subtitle || ""}</p>
-          </header>
-
+          </svg>
+        </div>
+        <div className="section-inner">
           <div className="section-layout">
             <FeaturesList
+              title={data.ui?.title || ""}
+              subtitle={data.ui?.subtitle || ""}
               features={allFeatures}
               onSelect={handleButtonClick}
               activeId={activeFeature.id}
             />
 
-            <div className="hero-container">
+            <div
+              className="hero-container"
+              style={{
+                paddingTop: isTablet ? "8rem" : undefined,
+              }}
+            >
               <AnimatePresence mode="wait">
                 <HeroFeatureCard
+                  cards={allFeatures}
+                  section={section}
                   key={activeFeature.id}
                   title={activeFeature.hero.title}
                   description={activeFeature.hero.description}
                   image={activeFeature.hero.image}
                   isTransitioning={isTransitioning}
+                  activeIndex={activeIndex}
+                  onDotClick={handleDotClick}
                 />
               </AnimatePresence>
             </div>

@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback, memo } from "react";
+import PropTypes from "prop-types";
 import { AppContext } from "./AppContext";
 import LoadingScreen from "../components/LoadingScreen/LoadingScreen";
 import * as THREE from "three";
@@ -10,8 +11,8 @@ import "../components/PreloadModels";
 const MIN_LOADING_TIME_MS = 2500; // Tiempo mínimo de loading (para que la animación se vea)
 const MAX_LOADING_TIME_MS = 10000; // Timeout máximo de seguridad
 
-// Proveedor del contexto
-export const AppProvider = ({ children }) => {
+// Proveedor del contexto optimizado con memo
+export const AppProvider = memo(function AppProvider({ children }) {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [cameraTarget, setCameraTarget] = useState([0, 0, 3]);
   const [cameraLookAtTarget, setCameraLookAtTarget] = useState([0, 0, 0]);
@@ -99,38 +100,51 @@ export const AppProvider = ({ children }) => {
     setCameraLookAtTarget(lookAt);
   }, []);
 
-  const moveModelTo = useCallback((modelRef, targetPosition, duration = 1500) => {
-    if (!modelRef.current) return;
+  const moveModelTo = useCallback(
+    (modelRef, targetPosition, duration = 1500) => {
+      if (!modelRef.current) return;
 
-    const startPosition = modelRef.current.position.clone();
-    const startTime = performance.now();
+      const startPosition = modelRef.current.position.clone();
+      const startTime = performance.now();
 
-    const easeInOutQuad = (t) => {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    };
+      const easeInOutQuad = (t) => {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      };
 
-    const animateMove = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const rawProgress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeInOutQuad(rawProgress);
+      const animateMove = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const rawProgress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeInOutQuad(rawProgress);
 
-      modelRef.current.position.lerpVectors(
-        startPosition,
-        targetPosition,
-        easedProgress
-      );
+        modelRef.current.position.lerpVectors(
+          startPosition,
+          targetPosition,
+          easedProgress,
+        );
 
-      if (rawProgress < 1) {
-        requestAnimationFrame(animateMove);
-      }
-    };
+        if (rawProgress < 1) {
+          requestAnimationFrame(animateMove);
+        }
+      };
 
-    requestAnimationFrame(animateMove);
-  }, []);
+      requestAnimationFrame(animateMove);
+    },
+    [],
+  );
 
   const handleOptionClick = useCallback((position, label, modelRef) => {
     setActiveInfo(label);
     setCameraTarget(position);
+
+    // En mobile, activar animación de salida de los glasses
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    if (isMobile) {
+      setIsLeavingOptions(true);
+      // Resetear después de que termine la animación
+      setTimeout(() => {
+        setIsLeavingOptions(false);
+      }, 2500);
+    }
 
     if (modelRef?.current) {
       const modelPosition = modelRef.current.position;
@@ -141,6 +155,38 @@ export const AppProvider = ({ children }) => {
       ]);
     }
   }, []);
+
+  const scrollToSection = useCallback(
+    (targetProgress) => {
+      const easeInOutQuad = (t) =>
+        t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+      const startProgress = scrollProgress;
+      const distance = targetProgress - startProgress;
+      const duration = 1000;
+      let startTime = null;
+
+      const animateScroll = (timestamp) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = easeInOutQuad(progress);
+
+        const newScrollY =
+          (startProgress + distance * easedProgress) *
+          (document.body.scrollHeight - window.innerHeight);
+        window.scrollTo(0, newScrollY);
+        setScrollProgress(startProgress + distance * easedProgress);
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      requestAnimationFrame(animateScroll);
+    },
+    [scrollProgress, setScrollProgress],
+  );
 
   const value = useMemo(
     () => ({
@@ -157,6 +203,7 @@ export const AppProvider = ({ children }) => {
       contactModal,
       setContactModal,
       moveModelTo,
+      scrollToSection,
       isLoading,
       loadingProgress,
       coinHasLanded,
@@ -180,7 +227,8 @@ export const AppProvider = ({ children }) => {
       moveCameraTo,
       moveModelTo,
       handleOptionClick,
-    ]
+      scrollToSection,
+    ],
   );
 
   return (
@@ -203,4 +251,8 @@ export const AppProvider = ({ children }) => {
       </AppContext.Provider>
     </>
   );
+});
+
+AppProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

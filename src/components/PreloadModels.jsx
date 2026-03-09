@@ -6,17 +6,11 @@
  */
 import { useGLTF } from "@react-three/drei";
 
-// ─── Lista completa de modelos ───────────────────────────────────────────────
+// Solo modelos realmente usados (CoinModel + CombinedGlasses). Evita 404 y carga innecesaria en móvil.
 const ALL_MODELS = [
-  // Moneda principal (usada en CoinModel)
-  "/coinpintada.glb",
-  // Glasses combinados (desktop y mobile)
+  "/COINULTIMAA.glb",
   "/GLASES222.glb",
-  "/newglasscel.glb",
-  // Glasses individuales (usados en GlassGroup / GlassModel3D)
-  "/glas1final.glb",
-  "/glases222final.glb",
-  "/glases333final.glb",
+  "/glassmobile.glb",
 ];
 
 // Ejecutar precargas inmediatamente al importar el módulo

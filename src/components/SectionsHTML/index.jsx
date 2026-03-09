@@ -10,17 +10,17 @@ import SecondSection from "../SecondSection/SecondSection";
 const OptionsOverlay = lazy(() =>
   import("../OptionsOverlay/OptionsOverlay").then((m) => ({
     default: m.OptionsOverlay,
-  }))
+  })),
 );
 const ServiceCards = lazy(() =>
   import("../ServicesCards/ServiceCards").then((m) => ({
     default: m.default,
-  }))
+  })),
 );
 const ContactForm = lazy(() =>
   import("../ContactForm").then((m) => ({
     default: m.default,
-  }))
+  })),
 );
 
 /**

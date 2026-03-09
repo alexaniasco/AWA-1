@@ -1,0 +1,64 @@
+/* ================= PUNTOS DE ÍNDICE ================= */
+
+.hero-feature-card__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 8px 0;
+}
+
+.hero-feature-card__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.hero-feature-card__dot:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  transform: scale(1.2);
+}
+
+.hero-feature-card__dot.active {
+  background-color: #1a202c;
+  transform: scale(1.2);
+}
+
+/* Colores específicos por sección */
+.hero-feature-card[data-section="EXCLUSIVO"] .hero-feature-card__dot.active {
+  background-color: #4156B5;
+}
+
+.hero-feature-card[data-section="PROFESIONAL"] .hero-feature-card__dot.active {
+  background-color: #8E4CA8;
+}
+
+.hero-feature-card[data-section="EMPRESA"] .hero-feature-card__dot.active {
+  background-color: #4B7E8E;
+}
+
+/* Mobile: dots más grandes para mejor touch */
+@media (max-width: 768px) {
+  .hero-feature-card__dots {
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .hero-feature-card__dot {
+    width: 14px;
+    height: 14px;
+  }
+
+  .hero-feature-card__dot:hover {
+    transform: none;
+  }
+
+  .hero-feature-card__dot:active {
+    transform: scale(0.9);
+  }
+}

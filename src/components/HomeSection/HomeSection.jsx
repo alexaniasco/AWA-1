@@ -17,7 +17,7 @@ const HomeSection = () => {
       const timer = setTimeout(() => {
         setShowContent(true);
       }, 1200); // Delay de 1.2s después del aterrizaje de la moneda
-      
+
       return () => clearTimeout(timer);
     }
   }, [coinHasLanded]);
@@ -26,7 +26,7 @@ const HomeSection = () => {
   // scrollProgress va de 0 a 0.15 en esta sección
   const normalizedProgress = Math.min(Math.max((scrollProgress - 0) / 0.15, 0), 1);
   const translateY = normalizedProgress * -150; // Mover hacia arriba más distancia
-  
+
   // Fade out solo cuando ya está saliendo (después del 60% del movimiento)
   const fadeOutStart = 0.6;
   let scrollOpacity = 1;
@@ -38,7 +38,7 @@ const HomeSection = () => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="home-section-wrapper"
       style={{
         transform: `translateY(${translateY}vh)`,
@@ -52,13 +52,14 @@ const HomeSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
-            transition={{ 
+            transition={{
               duration: 1.2,
               ease: [0.25, 0.1, 0.25, 1] // Ease suave y gradual
             }}
           >
             <h1 className="home-title">
-              Bienvenido a Apolo<br />Web Agency
+              <span className="home-title-welcome">Bienvenido a</span><br />
+              <span className="home-title-agency">Apolo Web Agency</span>
             </h1>
             <p className="home-subtitle">
               Potenciamos empresas, profesionales y proyectos<br />

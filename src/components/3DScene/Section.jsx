@@ -1,7 +1,9 @@
 import { SectionCameraControls } from "../../controllers/SectionCameraController";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
-export const Section = ({ children }) => {
+import PropTypes from "prop-types";
+
+export const Section = ({ children, deviceConfig }) => {
   const {
     scrollProgress,
     setActiveInfo,
@@ -19,8 +21,18 @@ export const Section = ({ children }) => {
         scrollProgress={scrollProgress}
         cameraTarget={cameraTarget}
         cameraLookAtTarget={cameraLookAtTarget}
+        deviceConfig={deviceConfig}
       />
       {children}
     </>
   );
+};
+
+Section.propTypes = {
+  children: PropTypes.node,
+  deviceConfig: PropTypes.shape({
+    isMobile: PropTypes.bool,
+    isTablet: PropTypes.bool,
+    isDesktop: PropTypes.bool,
+  }),
 };

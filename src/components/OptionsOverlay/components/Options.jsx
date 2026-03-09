@@ -3,7 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { AppContext } from "../../../context/AppContext";
 import { options } from "./data/data";
 
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT = 1024;
 
 const Options = ({
   onOptionClick,
@@ -13,14 +13,20 @@ const Options = ({
   setSectionHover,
 }) => {
   const { scrollProgress } = useContext(AppContext);
-  const [isMobile, setIsMobile] = useState(
-    () => typeof window !== "undefined" && window.innerWidth <= MOBILE_BREAKPOINT,
-  );
+
+  // Solución simple y robusta con fallback seguro
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+  });
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    };
+
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   return (
@@ -36,10 +42,13 @@ const Options = ({
 
         return (
           <AnimatePresence mode="popLayout" key={index}>
-            {scrollProgress > 0.4 && scrollProgress < 0.47 && (
+            {scrollProgress > 0.4 && scrollProgress < 0.49 && (
               <motion.div
                 onClick={() =>
-                  onOptionClick(option.position2, option.label)
+                  onOptionClick(
+                    isMobile ? option.positionMobile : option.position2,
+                    option.label,
+                  )
                 }
                 key={index}
                 onMouseDown={() => setPressedIndex(index)}
@@ -77,7 +86,7 @@ const Options = ({
                 }}
               >
                 <img
-                  style={{ width: isMobile ? "40vw" : "30vw" }}
+                  style={{ width: isMobile ? "50vw" : "30vw" }}
                   src={option.img}
                   alt={option.label}
                 />
