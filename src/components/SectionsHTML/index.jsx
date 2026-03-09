@@ -1,53 +1,105 @@
-import { useContext, useEffect } from "react";
+import { Suspense, lazy, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
-import { useScrollManager } from "../../controllers/useScrollManager";
+import { SCROLL_RANGES } from "../../controllers/scrollConfig";
 
-import { OptionsOverlay } from "../OptionsOverlay/OptionsOverlay";
-import ServiceCards from "../ServicesCards/ServiceCards";
-import ContactForm from "../ContactForm";
 import HomeSection from "../HomeSection/HomeSection";
 import SecondSection from "../SecondSection/SecondSection";
 
-const SectionsHTML = () => {
-  const {
-    scrollProgress,
- 
-    setScrollProgress,
-    contactModal,
-    handleOptionClick,
-  } = useContext(AppContext);
-  useEffect(() => {
-    console.log(contactModal, "cambio");
-  }, [contactModal]);
+// ─── Lazy imports con prefetch ──────────────────────────────────────────────
+// Estos componentes se cargan en background después del mount, no cuando se necesitan.
+const OptionsOverlay = lazy(() =>
+  import("../OptionsOverlay/OptionsOverlay").then((m) => ({
+    default: m.OptionsOverlay,
+  })),
+);
+const ServiceCards = lazy(() =>
+  import("../ServicesCards/ServiceCards").then((m) => ({
+    default: m.default,
+  })),
+);
+const ContactForm = lazy(() =>
+  import("../ContactForm").then((m) => ({
+    default: m.default,
+  })),
+);
 
-  const { isInSection } = useScrollManager(setScrollProgress);
-  
-  // Mostrar HomeSection cuando la moneda está en la primera posición (después del loader)
+/**
+ * Indicador mínimo de carga para Suspense.
+ * Evita el freeze silencioso que ocurre con fallback={null}.
+ */
+const SuspenseFallback = () => (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      pointerEvents: "none",
+      zIndex: 50,
+    }}
+  />
+);
+
+const SectionsHTML = () => {
+  const { scrollProgress, handleOptionClick, contactModal } =
+    useContext(AppContext);
+
+  // ─── Prefetch: cargar chunks lazy en background después del mount ────────
+  const [prefetched, setPrefetched] = useState(false);
+  useEffect(() => {
+    // Esperar a que el hilo principal esté libre antes de precargar chunks
+    const id = requestIdleCallback
+      ? requestIdleCallback(() => {
+          import("../OptionsOverlay/OptionsOverlay");
+          import("../ServicesCards/ServiceCards");
+          import("../ContactForm");
+          setPrefetched(true);
+        })
+      : setTimeout(() => {
+          import("../OptionsOverlay/OptionsOverlay");
+          import("../ServicesCards/ServiceCards");
+          import("../ContactForm");
+          setPrefetched(true);
+        }, 2000);
+
+    return () => {
+      if (requestIdleCallback) cancelIdleCallback(id);
+      else clearTimeout(id);
+    };
+  }, []);
+
+  const isInSection = (section) => {
+    const range = SCROLL_RANGES.SECTIONS[section];
+    if (!range) return false;
+    return scrollProgress >= range[0] && scrollProgress < range[1];
+  };
+
   const showHomeSection = scrollProgress >= 0 && scrollProgress < 0.2;
-  
-  // Mostrar SecondSection cuando la moneda está en la segunda posición (lado izquierdo)
-  // Mostrarla desde antes y después para los efectos de transición (incluye retorno desde sección 3)
   const showSecondSection = scrollProgress >= 0.05 && scrollProgress < 0.65;
-  
+
   return (
     <>
       {showHomeSection && <HomeSection />}
       {showSecondSection && <SecondSection />}
-      
- 
-      {isInSection("OPTIONS")(scrollProgress) && (
-        <OptionsOverlay
-          onOptionClick={(position, label) =>
-            handleOptionClick(position, label)
-          }
-        />
-      )}
 
- 
+      <Suspense fallback={<SuspenseFallback />}>
+        {isInSection("OPTIONS") && (
+          <OptionsOverlay
+            onOptionClick={(position, label) =>
+              handleOptionClick(position, label)
+            }
+          />
+        )}
+      </Suspense>
 
-      {isInSection("CARDS")(scrollProgress) && <ServiceCards />}
-      <ContactForm></ContactForm>
+      <Suspense fallback={<SuspenseFallback />}>
+        {isInSection("CARDS") && <ServiceCards />}
+      </Suspense>
 
+      <Suspense fallback={<SuspenseFallback />}>
+        {contactModal && <ContactForm />}
+      </Suspense>
     </>
   );
 };

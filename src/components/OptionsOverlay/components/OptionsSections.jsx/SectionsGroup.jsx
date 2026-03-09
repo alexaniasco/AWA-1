@@ -41,4 +41,3 @@ export default function SectionsGroup({ activeInfo, isVisible2, handleBackClick 
         </div>
     );
 };
-

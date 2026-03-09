@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import "./ServiceCards.css";
 import { useContext, useEffect, useState } from "react";
 import { ServicesContext } from "./hooks/ServicesContext.js";
-import { ServiceSection } from "./ServiceSection.tsx";
+import ApoloDashboardRevenue from "./ApoloDashboardRevenue.jsx";
 
 const ServiceCards = () => {
 
@@ -36,7 +36,7 @@ const ServiceCards = () => {
     const timer = setTimeout(() => setIsVisible(true), 1200);
     return () => clearTimeout(timer);
   }, []);
-  
+
   return (
     <AnimatePresence mode="wait">
       {isVisible && (
@@ -44,11 +44,11 @@ const ServiceCards = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 1 }}
           className="overlay"
         >
-    <ServiceSection />
-    </motion.div>
+          <ApoloDashboardRevenue />
+        </motion.div>
       )}
     </AnimatePresence>
   );

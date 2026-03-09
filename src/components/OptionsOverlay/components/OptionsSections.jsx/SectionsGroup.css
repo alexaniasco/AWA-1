@@ -1,81 +1,129 @@
 .section-container {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.motion-section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.motion-section.right {
+  justify-content: flex-end;
+  padding-right: 22px;
+  @media screen and (max-width: 768px) {
+    padding-right: 0;
   }
-  
-  .motion-section {
-    width: 100%;
-    height: 100%;
-    display: flex;
+}
+
+.motion-section.left {
+  justify-content: flex-start;
+  padding-left: 22px;
+  @media screen and (max-width: 768px) {
+    padding-left: 0;
   }
-  
-  .motion-section.right {
-    justify-content: flex-end;
-  }
-  
-  .motion-section.left {
-    justify-content: flex-start;
-  }
-  
+}
+
+.section-content {
+  color: white;
+  z-index: 25;
+  height: -webkit-fill-available;
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.section-content.align-end {
+  align-self: flex-end;
+}
+
+.back-arrow {
+  object-fit: contain;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  opacity: 0.8;
+  flex-shrink: 0;
+  position: absolute;
+  top: auto;
+  bottom: 20px;
+  right: 20px;
+  z-index: 30;
+}
+
+/* Tablets específicamente */
+@media (max-width: 900px) and (min-width: 769px) {
   .section-content {
-    max-width: 60vw;
-    color: white;
-    z-index: 25;
-    height: -webkit-fill-available;
-    padding: 20px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    padding: 2rem 1.5rem;
   }
-  
-  .section-content.align-end {
-    align-self: flex-end;
-  }
-  
+
   .back-arrow {
-    object-fit: contain;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    opacity: 0.8;
+    width: 20px;
+    height: 20px;
   }
-  
-  .section-title-img {
-    object-fit: contain;
-    width: auto;
-    height: auto;
+}
+
+@media (max-width: 768px) {
+  .section-content {
+    padding: 0;
   }
-  
-  .section-text {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 24px 0;
+
+  .back-arrow {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 8px;
+    box-sizing: border-box;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 1;
+    border: none;
   }
-  
-  .section-heading {
-    font-family: "Nunito Sans";
-    font-weight: bold;
-    font-size: 22px;
-  }
-  
-  .section-description {
-    font-family: "Nunito Sans";
-    font-weight: normal;
-    padding-top: 10px;
-    font-size: 20px;
-    line-height: 32px;
-    letter-spacing: 1px;
-  }
-  
-  .button-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .section-img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+}
+
+.section-title-img {
+  object-fit: contain;
+  width: auto;
+  height: auto;
+}
+
+.section-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 0;
+}
+
+.section-heading {
+  font-family: "Nunito Sans";
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.section-description {
+  font-family: "Nunito Sans";
+  font-weight: normal;
+  padding-top: 10px;
+  font-size: 20px;
+  line-height: 32px;
+  letter-spacing: 1px;
+}
+
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

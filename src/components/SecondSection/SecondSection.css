@@ -21,16 +21,20 @@
 }
 
 .second-title {
-  font-family: inherit;
+  font-family: "Bai Jamjuree", sans-serif;
   font-size: 48px;
   font-weight: 700;
   line-height: 1.15;
-  color: #000000;
+    color: #2a2a2a;
+
   margin: 0 0 24px 0;
+  @media (max-width: 768px) {
+    font-size: 36px;
+  }
 }
 
 .second-quote {
-  font-family: inherit;
+  font-family: "Nunito Sans";
   font-size: 18px;
   font-weight: 400;
   line-height: 1.6;
@@ -40,7 +44,7 @@
 }
 
 .second-author {
-  font-family: inherit;
+  font-family: "Nunito Sans";
   font-size: 16px;
   font-weight: 500;
   color: #666666;
@@ -50,16 +54,24 @@
 /* Tablets */
 @media (max-width: 1024px) {
   .second-section-wrapper {
-    width: 60%;
+  align-items: flex-end;
+    width: 100%;
   }
 
   .second-section-container {
-    max-width: 520px;
-    width: 85%;
+    margin-bottom: 6rem !important;
+    width: 100%;
+       background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 24px 16px;
+    border-radius: 16px;
+    margin: 0 16px;
   }
 
   .second-title {
-    font-size: 44px;
+    font-size: 6rem;
+    text-transform: uppercase;
   }
 
   .second-quote {
@@ -80,12 +92,18 @@
   }
 
   .second-section-container {
-    max-width: 85%;
+    width: 100%;
     text-align: center;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 24px 16px;
+    border-radius: 16px;
+    margin: 0 16px;
   }
 
   .second-title {
-    font-size: 36px;
+    font-size: 4rem;
   }
 
   .second-quote {
@@ -105,17 +123,21 @@
   }
 
   .second-section-container {
-    max-width: 90%;
+    margin-bottom: 6rem;
+    width: 100%;
   }
 
   .second-title {
-    font-size: 32px;
+    font-size: 3rem;
     margin-bottom: 20px;
+    text-transform: uppercase;
+
   }
 
   .second-quote {
     font-size: 15px;
     margin-bottom: 12px;
+    padding: 0px 20px;
   }
 
   .second-author {
@@ -130,7 +152,8 @@
   }
 
   .second-title {
-    font-size: 28px;
+    font-size: 3rem;
+    text-transform: uppercase;
   }
 
   .second-quote {

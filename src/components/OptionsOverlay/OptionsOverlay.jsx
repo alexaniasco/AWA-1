@@ -2,36 +2,34 @@ import { motion } from "motion/react";
 import { useState, useEffect, useContext } from "react";
 import Options from "./components/Options";
 import SectionsGroup from "./components/OptionsSections.jsx/SectionsGroup";
-import GlassGroup from "./components/GlassGroup";
 
 import { AppContext } from "../../context/AppContext";
 
 export const OptionsOverlay = ({ onOptionClick }) => {
-  const { setCameraTarget, setActiveInfo, activeInfo, isLeavingOptions } = useContext(AppContext);
+  const { setCameraTarget, setCameraLookAtTarget, setActiveInfo, activeInfo, isLeavingOptions } =
+    useContext(AppContext);
   const [isVisible, setIsVisible] = useState(false);
   const [isVisible2, setIsVisible2] = useState(false);
   const [isGlassVisible, setIsGlassVisible] = useState(false);
   const [pressedIndex, setPressedIndex] = useState(null);
   const [sectionHover, setSectionHover] = useState("");
 
-
   useEffect(() => {
     // Delay para las imágenes de vidrio (GlassGroup)
     const glassTimer = setTimeout(() => {
       setIsGlassVisible(true);
-    }, 1500); // 3.5 segundos para que las partículas escapen primero
+    }, 1000); // 3.5 segundos para que las partículas escapen primero
 
     // Delay para los botones/opciones
     const optionsTimer = setTimeout(() => {
       setIsVisible(true);
-    }, 4000); // 4 segundos
+    }, 1500); // 4 segundos
 
     return () => {
       clearTimeout(glassTimer);
       clearTimeout(optionsTimer);
     };
   }, []);
-
 
   useEffect(() => {
     if (activeInfo) {
@@ -48,6 +46,7 @@ export const OptionsOverlay = ({ onOptionClick }) => {
   const handleBackClick = () => {
     setActiveInfo("");
     setCameraTarget([0, 0, 15]);
+    setCameraLookAtTarget([0, 0, 0]); // Resetear el lookAt al centro (moneda)
 
     setIsVisible(false); // Ocultar opciones antes de volver a mostrarlas
     setIsGlassVisible(false); // Ocultar también las imágenes de vidrio
@@ -61,6 +60,7 @@ export const OptionsOverlay = ({ onOptionClick }) => {
     <motion.div
       style={{
         position: "fixed",
+        padding: "20px 20px",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
@@ -71,11 +71,6 @@ export const OptionsOverlay = ({ onOptionClick }) => {
         zIndex: 20,
       }}
     >
-      {isGlassVisible && (
-      <GlassGroup
-        sectionHover={sectionHover}
-        activeInfo={activeInfo} />
-      )}
       {isVisible && !activeInfo && !isLeavingOptions && (
         <Options
           sectionHover={sectionHover}
