@@ -86,7 +86,7 @@ const Options = ({
                 }}
               >
                 <img
-                  style={{ width: isMobile ? "50vw" : "30vw" }}
+                  style={{ width: isMobile ? "40vw" : "400px" }}
                   src={option.img}
                   alt={option.label}
                 />

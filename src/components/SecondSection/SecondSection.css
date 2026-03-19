@@ -1,4 +1,8 @@
-/* Contenedor del 60% derecho */
+/* ====================================================================
+   SECOND SECTION — Premium Desktop Layout
+   ==================================================================== */
+
+/* ── Wrapper: columna derecha del 60% ─────────────────────────────── */
 .second-section-wrapper {
   position: fixed;
   right: 0;
@@ -13,167 +17,242 @@
   transition: transform 0.2s ease-out, opacity 0.2s ease-out;
 }
 
-/* Caja de contenido centrada dentro del wrapper */
+/* ── Contenedor principal ─────────────────────────────────────────── */
 .second-section-container {
-  max-width: 600px;
+  max-width: 560px;
   width: 90%;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
+/* ── Badge ────────────────────────────────────────────────────────── */
+.second-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7c6ef5;
+  background: rgba(124, 110, 245, 0.08);
+  border: 1px solid rgba(124, 110, 245, 0.2);
+  border-radius: 999px;
+  padding: 6px 14px;
+  width: fit-content;
+  margin-bottom: 22px;
+  backdrop-filter: blur(4px);
+}
+.second-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7c6ef5;
+  box-shadow: 0 0 0 3px rgba(124, 110, 245, 0.25);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(124, 110, 245, 0.25); }
+  50%       { box-shadow: 0 0 0 6px rgba(124, 110, 245, 0.08); }
+}
+
+/* ── Título ───────────────────────────────────────────────────────── */
 .second-title {
   font-family: "Bai Jamjuree", sans-serif;
-  font-size: 48px;
-  font-weight: 700;
-  line-height: 1.15;
-    color: #2a2a2a;
-
-  margin: 0 0 24px 0;
-  @media (max-width: 768px) {
-    font-size: 36px;
-  }
+  font-size: 54px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #1a1a2e;
+  margin: 0 0 18px 0;
+  letter-spacing: -0.02em;
+}
+.second-title-gradient {
+  background: linear-gradient(135deg, #7c6ef5 0%, #c471ed 50%, #f64f59 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
+/* ── Accent line ──────────────────────────────────────────────────── */
+.second-accent-line {
+  width: 56px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c6ef5, #c471ed);
+  margin-bottom: 22px;
+  transform-origin: left;
+}
+
+/* ── Quote ────────────────────────────────────────────────────────── */
 .second-quote {
-  font-family: "Nunito Sans";
-  font-size: 18px;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 17px;
   font-weight: 400;
-  line-height: 1.6;
-  color: #333333;
+  line-height: 1.7;
+  color: #4a4a6a;
   font-style: italic;
-  margin: 0 0 16px 0;
+  margin: 0 0 10px 0;
+  padding: 0;
+  border: none;
+  position: relative;
+}
+.second-quote::before {
+  content: "\201C";
+  font-size: 72px;
+  line-height: 0;
+  vertical-align: -0.45em;
+  color: rgba(124, 110, 245, 0.18);
+  font-family: Georgia, serif;
+  margin-right: 2px;
 }
 
+/* ── Author ───────────────────────────────────────────────────────── */
 .second-author {
-  font-family: "Nunito Sans";
-  font-size: 16px;
-  font-weight: 500;
-  color: #666666;
-  margin: 0;
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9b97b5;
+  margin: 0 0 28px 0;
 }
 
-/* Tablets */
+/* ── Keyword tags ─────────────────────────────────────────────────── */
+.second-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.second-tag {
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #6d65c8;
+  background: rgba(124, 110, 245, 0.07);
+  border: 1px solid rgba(124, 110, 245, 0.15);
+  border-radius: 6px;
+  padding: 5px 12px;
+  animation: tag-float 3.5s ease-in-out infinite;
+}
+@keyframes tag-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-3px); }
+}
+
+/* ── Stats row ────────────────────────────────────────────────────── */
+.second-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.second-stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(124, 110, 245, 0.12);
+  border-radius: 14px;
+  padding: 14px 22px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 2px 12px rgba(124, 110, 245, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  cursor: default;
+}
+.second-stat-pill:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 6px 22px rgba(124, 110, 245, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.second-stat-value {
+  font-family: "Bai Jamjuree", sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c6ef5, #c471ed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.second-stat-label {
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9b97b5;
+}
+
+/* ====================================================================
+   RESPONSIVE
+   ==================================================================== */
+
+/* ── Tablets ──────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .second-section-wrapper {
-  align-items: flex-end;
     width: 100%;
+    align-items: flex-end;
   }
-
   .second-section-container {
-    margin-bottom: 6rem !important;
-    width: 100%;
-       background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    padding: 24px 16px;
-    border-radius: 16px;
+    width: calc(100% - 32px);
+    max-width: 100%;
     margin: 0 16px;
+    margin-bottom: 6rem;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(124, 110, 245, 0.1);
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 32px rgba(124, 110, 245, 0.08);
   }
-
-  .second-title {
-    font-size: 6rem;
-    text-transform: uppercase;
-  }
-
-  .second-quote {
-    font-size: 17px;
-  }
-
-  .second-author {
-    font-size: 15px;
-  }
+  .second-title { font-size: 40px; }
 }
 
-/* Mobile Landscape y Tablets pequeñas */
+/* ── Mobile Landscape / Tablet small ─────────────────────────────── */
 @media (max-width: 768px) {
   .second-section-wrapper {
     width: 100%;
     right: 0;
     left: 0;
   }
-
   .second-section-container {
-    width: 100%;
     text-align: center;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    padding: 24px 16px;
-    border-radius: 16px;
-    margin: 0 16px;
   }
-
-  .second-title {
-    font-size: 4rem;
-  }
-
-  .second-quote {
-    font-size: 16px;
-    margin-bottom: 14px;
-  }
-
-  .second-author {
-    font-size: 14px;
-  }
+  .second-badge { margin-left: auto; margin-right: auto; }
+  .second-tags  { justify-content: center; }
+  .second-stats { justify-content: center; }
+  .second-accent-line { margin-left: auto; margin-right: auto; }
+  .second-title { font-size: 34px; }
+  .second-quote { font-size: 16px; }
+  .second-author { font-size: 13px; }
 }
 
-/* Mobile Portrait */
+/* ── Mobile Portrait ─────────────────────────────────────────────── */
 @media (max-width: 480px) {
-  .second-section-wrapper {
-    width: 100%;
-  }
-
+  .second-section-wrapper { width: 100%; }
   .second-section-container {
-    margin-bottom: 6rem;
-    width: 100%;
+    margin-bottom: 10px;
+    padding: 24px 18px;
   }
-
-  .second-title {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-
-  }
-
-  .second-quote {
-    font-size: 15px;
-    margin-bottom: 12px;
-    padding: 0px 20px;
-  }
-
-  .second-author {
-    font-size: 13px;
-  }
+  .second-title { font-size: 30px; margin-bottom: 14px; }
+  .second-quote { font-size: 15px; }
+  .second-stat-pill { padding: 11px 16px; }
+  .second-stat-value { font-size: 22px; }
 }
 
-/* Mobile pequeño */
+/* ── Mobile pequeño ──────────────────────────────────────────────── */
 @media (max-width: 360px) {
-  .second-section-wrapper {
-    width: 100%;
-  }
-
-  .second-title {
-    font-size: 3rem;
-    text-transform: uppercase;
-  }
-
-  .second-quote {
-    font-size: 14px;
-  }
-
-  .second-author {
-    font-size: 12px;
-  }
+  .second-title  { font-size: 26px; }
+  .second-quote  { font-size: 14px; }
+  .second-author { font-size: 12px; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

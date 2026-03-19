@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import ExternalLink from "lucide-react/dist/esm/icons/external-link";
@@ -24,6 +24,7 @@ const SERVICES_BY_TAB = {
         "Diseñamos y actualizamos tu entorno profesional para que siempre esté al nivel del mercado IT.",
       badge: "Onboarding continuo",
       icon: ExternalLink,
+      accentColor: "#7c6ef5",
     },
     {
       id: "delegar-tareas",
@@ -32,6 +33,7 @@ const SERVICES_BY_TAB = {
         "Enfócate en la estrategia mientras nuestro equipo se encarga de la operación y la ejecución.",
       badge: "Operaciones",
       icon: UserCog,
+      accentColor: "#c471ed",
     },
     {
       id: "escala-ingresos",
@@ -40,6 +42,7 @@ const SERVICES_BY_TAB = {
         "Accede a proyectos de alto valor y estructuras pensadas para impulsar tu facturación.",
       badge: "Crecimiento",
       icon: LayoutGrid,
+      accentColor: "#7c6ef5",
     },
     {
       id: "alcance-global",
@@ -48,6 +51,7 @@ const SERVICES_BY_TAB = {
         "Conectamos tu talento con compañías y startups de diferentes mercados y geografías.",
       badge: "Expansión",
       icon: GitMerge,
+      accentColor: "#c471ed",
     },
   ],
   empresas: [
@@ -58,6 +62,7 @@ const SERVICES_BY_TAB = {
         "Equipos listos para integrarse a tus squads sin fricción, con perfiles curados por seniority.",
       badge: "Staffing",
       icon: UserCog,
+      accentColor: "#7c6ef5",
     },
     {
       id: "proyectos-end-to-end",
@@ -66,6 +71,7 @@ const SERVICES_BY_TAB = {
         "Nos ocupamos del ciclo completo: discovery, diseño, desarrollo, QA y despliegue.",
       badge: "Delivery",
       icon: LayoutGrid,
+      accentColor: "#c471ed",
     },
     {
       id: "integraciones",
@@ -74,6 +80,7 @@ const SERVICES_BY_TAB = {
         "Conectamos tus sistemas y automatizamos flujos para reducir errores y tiempos muertos.",
       badge: "Automatización",
       icon: GitMerge,
+      accentColor: "#7c6ef5",
     },
     {
       id: "acompanamiento",
@@ -82,6 +89,7 @@ const SERVICES_BY_TAB = {
         "Te ayudamos a priorizar roadmap, definir KPIs y tomar decisiones basadas en datos.",
       badge: "Estrategia",
       icon: ExternalLink,
+      accentColor: "#c471ed",
     },
   ],
   exclusivos: [
@@ -92,6 +100,7 @@ const SERVICES_BY_TAB = {
         "Acompañamiento personalizado para founders y directores que necesitan una mirada técnica senior.",
       badge: "Mentoring",
       icon: ExternalLink,
+      accentColor: "#f64f59",
     },
     {
       id: "squads-dedicados",
@@ -100,6 +109,7 @@ const SERVICES_BY_TAB = {
         "Células completas que trabajan únicamente en tus iniciativas clave, con foco en resultado.",
       badge: "Premium",
       icon: UserCog,
+      accentColor: "#c471ed",
     },
     {
       id: "laboratorio",
@@ -108,6 +118,7 @@ const SERVICES_BY_TAB = {
         "Experimentamos con nuevas tecnologías para validar ideas rápido y con bajo riesgo.",
       badge: "Innovación",
       icon: LayoutGrid,
+      accentColor: "#7c6ef5",
     },
     {
       id: "partnership",
@@ -116,8 +127,31 @@ const SERVICES_BY_TAB = {
         "Construimos relaciones de largo plazo donde compartimos riesgos, aprendizajes y crecimiento.",
       badge: "Alianzas",
       icon: GitMerge,
+      accentColor: "#f64f59",
     },
   ],
+};
+
+/* ── Stagger variants ────────────────────────────────────────────────── */
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.09 } },
+  exit: { transition: { staggerChildren: 0.05, staggerDirection: -1 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 22, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.52, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0,
+    y: -12,
+    transition: { duration: 0.25 },
+  },
 };
 
 const ApoloDashboardRevenue = () => {
@@ -126,71 +160,116 @@ const ApoloDashboardRevenue = () => {
   const services = SERVICES_BY_TAB[activeTab] || SERVICES_BY_TAB.profesionales;
 
   return (
-    <div className="min-h-screen lg:h-screen w-full bg-[#091583]/20 text-white px-8 sm:px-4 lg:px-20  ">
-      <div className=" mx-auto w-full min-h-screen lg:h-full flex flex-col lg:flex-row items-stretch justify-between gap-4 lg:gap-20">
-        {/* Left section: hero text */}
+    <div
+      className="min-h-screen lg:h-screen w-full text-white px-8 sm:px-4 lg:px-20"
+      style={{
+        background:
+          "linear-gradient(135deg, #070420 0%, #0d0538 40%, #130b6e 80%, #1a0966 100%)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* ── Decorative background orbs ─────────────────────────────── */}
+      <div className="svc-orb svc-orb--1" />
+      <div className="svc-orb svc-orb--2" />
+      <div className="svc-orb svc-orb--3" />
+
+      <div
+        className="mx-auto w-full min-h-screen lg:h-full flex flex-col lg:flex-row items-stretch justify-between gap-4 lg:gap-20"
+        style={{ position: "relative", zIndex: 1 }}
+      >
+        {/* ── LEFT: hero text ─────────────────────────────────────────── */}
         <div
           style={{ maxWidth: 400 }}
-          className=" columnaservices flex-1 lg:h-full flex flex-col justify-center gap-12  md:pb-0 sm:pb-0 pt-12"
+          className="columnaservices flex-1 lg:h-full flex flex-col justify-center gap-10 md:pb-0 sm:pb-0 pt-12"
         >
-          <div className=" space-y-6">
-            <div className="space-y-3">
-              <img style={{ width: "100%" }} src="/LOGO.svg"></img>
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, y: -18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-3"
+          >
+            <img style={{ width: "100%" }} src="/LOGO.svg" alt="Apolo Logo" />
+          </motion.div>
+
+          {/* <motion.div
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="svc-badge"
+          >
+            <span className="svc-badge-dot" />
+            Soluciones IT · Desde 2022
+          </motion.div> */}
+
+          {/* Description */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.65,
+              delay: 0.22,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="space-y-3 flex md:justify-center lg:justify-start"
+          >
+            {/* Accent line */}
+            <div>
+              <p
+                style={{ fontFamily: "Nunito Sans" }}
+                className="md:w-[80%] md:text-left lg:w-full text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed"
+              >
+                Conectamos talento, tecnología y oportunidad para cubrir las
+                necesidades de la industria IT. Somos el refuerzo de las
+                empresas y startups, como también el respaldo de los
+                profesionales.
+              </p>
             </div>
-          </div>
-          <div className="space-y-3 flex md:justify-center lg:justify-start">
-            <p
-              style={{ fontFamily: "Nunito Sans" }}
-              className="space-y-3 md:w-[80%] md:text-center lg:w-full text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed md:text-left"
-            >
-              Conectamos talento, tecnología y oportunidad para cubrir las
-              necesidades de la industria IT. Somos el refuerzo de las empresas
-              y startups, como también el respaldo de los profesionales.
-            </p>
-          </div>
-          <div className="btnservices">
+          </motion.div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="btnservices"
+          >
             <button
               onClick={() => setContactModal(true)}
-              style={{
-                border: "1px solid white !important",
-                outline: "1px solid white !important",
-                boxShadow: "0 0 0 1px white",
-              }}
-              className="inline-flex items-center gap-6 rounded-1xl bg-[#5749F4] px-6 py-3 text-sm sm:text-base font-medium shadow-md hover:bg-[#6b5dfb] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#5749F4] focus-visible:ring-offset-[#131124]"
+              className="svc-cta-btn inline-flex items-center gap-6"
             >
               <span className="whitespace-normal text-left">
                 Hablemos por WhatsApp o coordinemos un Meet
               </span>
               <ArrowRight className="w-4 h-4 shrink-0" />
+              <span className="svc-cta-shine" />
             </button>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Right section: tabs + cards */}
+        {/* ── RIGHT: tabs + cards ─────────────────────────────────────── */}
         <motion.div
-          initial={{ x: -150, opacity: 0 }}
-          whileInView={{ x: 0, opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+          initial={{ x: 80, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
           className="flex-1 lg:h-full flex flex-col justify-center py-12"
         >
+          {/* Tab header */}
           <header
             className="space-y-3 flex flex-col"
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            style={{ justifyContent: "center", alignItems: "center" }}
           >
             <p
               style={{ fontFamily: "Nunito Sans" }}
-              className="text-sm text-center sm:text-base text-slate-200"
+              className="text-xs text-center tracking-widest uppercase text-slate-400"
             >
               Nuestros servicios según
             </p>
 
             <div
               style={{ width: "fit-content" }}
-              className="inline-flex items-center gap-1 justify-center rounded-full bg-white/5 border border-slate-700/70 text-xs sm:text-sm p-1.5 shadow-[0_4px_20px_rgba(0,0,0,0.25)] backdrop-blur-sm"
+              className="svc-tabs inline-flex items-center gap-1 justify-center rounded-full p-1.5"
             >
               {TABS.map((tab) => {
                 const isActive = tab.id === activeTab;
@@ -199,46 +278,86 @@ const ApoloDashboardRevenue = () => {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full uppercase tracking-[0.16em] transition-colors border text-[10px] sm:text-xs md:text-sm ${
-                      isActive
-                        ? "bg-white/10 text-white border-slate-500/60"
-                        : "text-slate-300 border-slate-700/60 bg-transparent hover:bg-white/5 hover:text-slate-200 hover:border-slate-600/70"
-                    }`}
+                    className={`svc-tab-btn ${isActive ? "svc-tab-btn--active" : ""}`}
                   >
-                    <span>{tab.label}</span>
+                    {isActive && (
+                      <motion.span
+                        layoutId="tab-pill"
+                        className="svc-tab-pill"
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 32,
+                        }}
+                      />
+                    )}
+                    <span style={{ position: "relative", zIndex: 1 }}>
+                      {tab.label}
+                    </span>
                   </button>
                 );
               })}
             </div>
           </header>
 
-          <div className="flex-0.5 grid gap-4 sm:gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 items-stretch mt-8">
-            {services.map((service) => {
-              const Icon = service.icon;
-              return (
-                <article
-                  key={service.id}
-                  className="flex flex-col justify-between rounded-2xl border border-slate-700/70 bg-white/5 px-5 py-5 sm:px-6 sm:py-6 backdrop-blur-sm shadow-[0_18px_45px_rgba(0,0,0,0.4)] h-full lg:max-h-[200px]"
-                >
-                  <div className="flex items-center justify-between gap-3 mb-4">
-                    <div className="rounded-full bg-[#5749F4]/20 p-3">
-                      <Icon className="w-5 h-5 text-indigo-200" />
-                    </div>
-                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.16em] text-slate-300">
-                      {service.badge}
-                    </span>
-                  </div>
+          {/* Service cards grid */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              variants={gridVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 items-stretch mt-8"
+            >
+              {services.map((service) => {
+                const Icon = service.icon;
+                return (
+                  <motion.article
+                    key={service.id}
+                    variants={cardVariants}
+                    whileHover={{ y: -5, transition: { duration: 0.22 } }}
+                    className="svc-card flex flex-col justify-between h-full lg:max-h-[210px]"
+                    style={{ "--accent": service.accentColor }}
+                  >
+                    {/* Top accent bar */}
+                    <div className="svc-card-accent-bar" />
 
-                  <h3 className="text-base sm:text-lg font-semibold mb-2">
-                    {service.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                    {service.description}
-                  </p>
-                </article>
-              );
-            })}
-          </div>
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      {/* Icon container with gradient glow */}
+                      <div
+                        className="svc-card-icon-wrap"
+                        style={{
+                          background: `${service.accentColor}22`,
+                          boxShadow: `0 0 16px ${service.accentColor}33`,
+                        }}
+                      >
+                        <Icon
+                          className="w-5 h-5"
+                          style={{ color: service.accentColor }}
+                        />
+                      </div>
+
+                      {/* Badge pill */}
+                      <span
+                        className="svc-card-badge"
+                        style={{
+                          color: service.accentColor,
+                          borderColor: `${service.accentColor}40`,
+                          background: `${service.accentColor}12`,
+                        }}
+                      >
+                        {service.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="svc-card-title">{service.title}</h3>
+                    <p className="svc-card-desc">{service.description}</p>
+                  </motion.article>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       </div>
     </div>

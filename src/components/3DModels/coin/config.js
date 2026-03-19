@@ -53,7 +53,7 @@ export const TABLET = {
   options: new THREE.Vector3(-2.5, 0, 10),
   path: [
     new THREE.Vector3(2, 0, -5),
-    new THREE.Vector3(0, 0, -1),
+    new THREE.Vector3(0, 2, -1),
     new THREE.Vector3(0, 0, -1),
     new THREE.Vector3(0, 0, 12), // Cambiado de 0 a -1.4 para alinear a la izquierda
   ],
@@ -67,7 +67,7 @@ export const MOBILE = {
   options: new THREE.Vector3(-3.2, 0, 16),
   path: [
     new THREE.Vector3(1.5, 1, -2),
-    new THREE.Vector3(0,0, -4),
+    new THREE.Vector3(0,2, -2),
     new THREE.Vector3(0, 0, 5),
     new THREE.Vector3(-1, 0, 10),
   ],

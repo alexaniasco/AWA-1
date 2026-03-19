@@ -27,88 +27,87 @@ export default function FeaturesList({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll al item activo en mobile
   useEffect(() => {
     if (!activeId || !scrollRef.current) return;
-
-    // Solo ejecutar en mobile (cuando overflow-x es scroll)
     const isMobile = window.innerWidth <= 768;
     if (!isMobile) return;
 
-    // Buscar el elemento activo dentro del contenedor
-    // Nota: dependemos de que el div 'icon-active' sea hijo directo o nieto
-    // En este caso, buscamos por clase
-    const list = scrollRef.current;
-    if (!list) return;
-
-    // Buscar el hijo con la clase 'feature-active'
-    const activeEl = list.querySelector(".feature-active");
-
+    const activeEl = scrollRef.current.querySelector(".fl-item--active");
     if (activeEl instanceof HTMLElement) {
-      const containerRect = list.getBoundingClientRect();
-      const itemRect = activeEl.getBoundingClientRect();
-
-      // Calcular scroll relativo
+      const list = scrollRef.current;
       const scrollLeft =
         activeEl.offsetLeft - list.clientWidth / 2 + activeEl.clientWidth / 2;
-
-      list.scrollTo({
-        left: scrollLeft,
-        behavior: "smooth",
-      });
+      list.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
   }, [activeId]);
 
-  const activeIndex = features.findIndex((f) => f.id === activeId);
+  const hasTitle = title && title.trim() !== "";
+  const hasSubtitle = subtitle && subtitle.trim() !== "";
+  const showHeader = hasTitle || hasSubtitle;
 
   return (
-    <div className={`features ${className}`}>
-      <header className="section-header">
-        <h1 style={{ fontFamily: "Bai Jamjuree" }}>
-          <img src="/lineatitle.svg" alt="" className="title-svg" />
-          {title || ""}
-        </h1>
-        <p className="section-subtitle">{subtitle || ""}</p>
-      </header>
-      {/* Mapeo único para filas que contienen icono y texto */}
-      <div className="features__list" ref={scrollRef}>
-        {features.map((feature, index) => {
-          const isHovered = hoveredId === feature.id;
-          const isActive = activeId === feature.id;
+    <div className={`fl-root ${className}`}>
+      {showHeader && (
+        <div className="fl-header">
+          {hasTitle && <span className="fl-eyebrow">{title}</span>}
+          {hasSubtitle && <h3 className="fl-heading">{subtitle}</h3>}
+        </div>
+      )}
 
-          // Calcular distancia para efectos 3D en mobile
-          let offset = 0;
-          if (activeIndex !== -1) {
-            offset = index - activeIndex;
-          }
+      <nav className="fl-list" ref={scrollRef} aria-label="Lista de beneficios">
+        {features.map((feature, index) => {
+          const isActive = activeId === feature.id;
+          const isHovered = hoveredId === feature.id && !isActive;
 
           return (
-            <div
+            <button
               key={feature.id}
-              className={`
-                feature-item
-                ${index % 2 === 0 ? "feature-left" : "feature-right"}
-                ${isHovered ? "feature-hovered" : ""}
-                ${isActive ? "feature-active" : ""}
-              `}
-              data-offset={offset}
+              type="button"
+              className={`fl-item ${isActive ? "fl-item--active" : ""} ${isHovered ? "fl-item--hover" : ""}`}
               onClick={() => onSelect(feature.id)}
               onMouseEnter={() => setHoveredId(feature.id)}
               onMouseLeave={() => setHoveredId(null)}
-              style={
-                {
-                  cursor: "pointer",
-                  "--offset": offset,
-                } as React.CSSProperties
-              }
+              aria-pressed={isActive}
+              aria-label={feature.text}
             >
-              <div className="feature-icon">
-                <img src={feature.hexIcon} alt="" className="icon-img" />
-              </div>
-              <div className="feature-text">{feature.text}</div>
-            </div>
+              {/* Accent bar indicator (desktop) */}
+              <span className="fl-indicator" aria-hidden="true" />
+
+              {/* Número sutil */}
+              <span className="fl-num" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+
+              {/* Hex icon */}
+              <span className="fl-icon">
+                <img
+                  src={feature.hexIcon}
+                  alt=""
+                  className="fl-icon-img"
+                  draggable={false}
+                />
+              </span>
+
+              {/* Feature text */}
+              <span className="fl-text">{feature.text}</span>
+
+              {/* Active chevron */}
+              <span className="fl-chevron" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M9 18l6-6-6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </button>
           );
         })}
-      </div>
+      </nav>
     </div>
   );
 }
