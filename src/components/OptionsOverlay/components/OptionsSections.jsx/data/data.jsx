@@ -117,7 +117,7 @@ export const SectionData = {
         hexIcon: "/C3.png",
         text: "Accedé a oportunidades",
         hero: {
-          title: "Oportunidades internacionales",
+          title: "Internacionales",
           subtitle: "Expandí tu alcance",
           description:
             "Conectá con oportunidades que se alinean con tu talento y experiencia, sin límites geográficos.",

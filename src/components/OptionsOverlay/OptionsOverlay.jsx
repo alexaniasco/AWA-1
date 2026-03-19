@@ -6,8 +6,13 @@ import SectionsGroup from "./components/OptionsSections.jsx/SectionsGroup";
 import { AppContext } from "../../context/AppContext";
 
 export const OptionsOverlay = ({ onOptionClick }) => {
-  const { setCameraTarget, setCameraLookAtTarget, setActiveInfo, activeInfo, isLeavingOptions } =
-    useContext(AppContext);
+  const {
+    setCameraTarget,
+    setCameraLookAtTarget,
+    setActiveInfo,
+    activeInfo,
+    isLeavingOptions,
+  } = useContext(AppContext);
   const [isVisible, setIsVisible] = useState(false);
   const [isVisible2, setIsVisible2] = useState(false);
   const [isGlassVisible, setIsGlassVisible] = useState(false);
@@ -60,7 +65,6 @@ export const OptionsOverlay = ({ onOptionClick }) => {
     <motion.div
       style={{
         position: "fixed",
-        padding: "20px 20px",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",

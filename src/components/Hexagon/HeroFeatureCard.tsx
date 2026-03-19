@@ -1,9 +1,45 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useContext } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Html, Float, Center, useTexture } from "@react-three/drei";
+import * as THREE from "three";
 import { AppContext } from "../../context/AppContext";
 import "./HeroFeatureCard.css";
 import "./HeroFeatureCard-dots.css";
+
+// --- Componente 3D para el efecto Hover / Tilt ---
+function TiltGroup({ children }: { children: React.ReactNode }) {
+  const group = useRef<THREE.Group>(null);
+  const target = useRef(new THREE.Vector2(0, 0));
+
+  useFrame((state, delta) => {
+    // Convertir la posición normalizada del puntero (-1 a 1) en decaimiento suave
+    target.current.x = THREE.MathUtils.lerp(
+      target.current.x,
+      state.pointer.x * 0.4,
+      delta * 5,
+    ); // max angle ~22deg
+    target.current.y = THREE.MathUtils.lerp(
+      target.current.y,
+      state.pointer.y * -0.4,
+      delta * 5,
+    );
+
+    if (group.current) {
+      group.current.rotation.y = target.current.x;
+      group.current.rotation.x = target.current.y;
+    }
+  });
+
+  return <group ref={group}>{children}</group>;
+}
+
+// Geometría de Hexágono
+const HexagonGeometry = new THREE.CylinderGeometry(1.6, 1.6, 0.15, 6);
+HexagonGeometry.rotateX(Math.PI / 2); // Orientarlo hacia la cámara
+
+// --------------------------------------------------
 
 interface HeroFeatureCardProps {
   title: string;
@@ -48,66 +84,7 @@ export default function HeroFeatureCard({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  /* ================== TILT + FLOAT (solo en desktop) ================== */
-  useEffect(() => {
-    // En mobile: NO animaciones, todo estático
-    if (isMobile) {
-      if (tiltRef.current) {
-        tiltRef.current.style.transform = "none";
-        tiltRef.current.style.willChange = "auto";
-      }
-      // Resetear valores de animación
-      current.current = { rotateX: 0, rotateY: 0 };
-      target.current = { rotateX: 0, rotateY: 0 };
-      strength.current = 0;
-      return;
-    }
-
-    const MAX_ROTATION = 26;
-    const LERP = 0.08;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = e.clientX - window.innerWidth / 2;
-      const y = e.clientY - window.innerHeight / 2;
-
-      target.current.rotateY = (x / window.innerWidth) * MAX_ROTATION;
-      target.current.rotateX = (y / window.innerHeight) * -MAX_ROTATION;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    let frameId: number;
-    const start = performance.now();
-
-    const animate = (time: number) => {
-      const targetStrength = isTransitioning ? 0 : 1;
-      strength.current += (targetStrength - strength.current) * 0.08;
-
-      const floatY = Math.sin((time - start) * 0.001) * 10;
-
-      current.current.rotateX +=
-        (target.current.rotateX - current.current.rotateX) *
-        LERP *
-        strength.current;
-      current.current.rotateY +=
-        (target.current.rotateY - current.current.rotateY) *
-        LERP *
-        strength.current;
-
-      if (tiltRef.current) {
-        tiltRef.current.style.transform = `translateY(${floatY}px) rotateX(${current.current.rotateX}deg) rotateY(${current.current.rotateY}deg) translateZ(24px)`;
-      }
-
-      frameId = requestAnimationFrame(animate);
-    };
-
-    frameId = requestAnimationFrame(animate);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(frameId);
-    };
-  }, [isTransitioning, isMobile]);
+  // La lógica 3D irá dentro del Canvas
 
   return (
     <motion.div
@@ -120,15 +97,85 @@ export default function HeroFeatureCard({
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <div className="hero-feature-card__icon-container">
-        <div className="hero-feature-card__icon-wrapper">
-          <div ref={isMobile ? null : tiltRef} className="hexagon-stack">
-            <img
-              src="/luzelipse.svg"
-              alt=""
-              className="hero-feature-card__glow"
-            />
-            <img src={image} alt="" className="hero-feature-card__icon" />
-          </div>
+        <div
+          className="hero-feature-card__icon-wrapper"
+          style={{ height: "200px", perspective: "none" }}
+        >
+          {isMobile ? (
+            <div className="hexagon-stack">
+              <img
+                src="/luzelipse.svg"
+                alt=""
+                className="hero-feature-card__glow"
+              />
+              <img src={image} alt="" className="hero-feature-card__icon" />
+            </div>
+          ) : (
+            <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[5, 5, 5]} intensity={2} />
+              <directionalLight
+                position={[-5, -5, -5]}
+                intensity={0.5}
+                color="#cb4f8d"
+              />
+
+              <Float
+                speed={2}
+                rotationIntensity={0}
+                floatIntensity={1}
+                floatingRange={[-0.1, 0.1]}
+              >
+                <TiltGroup>
+                  {/* Vidrio Hexagonal Principal */}
+                  <mesh geometry={HexagonGeometry}>
+                    <meshPhysicalMaterial
+                      color="#ffffff"
+                      emissive="#000000"
+                      emissiveIntensity={0.2}
+                      metalness={0.15}
+                      roughness={0.15}
+                      transmission={0.85}
+                      ior={1.5}
+                      thickness={0.4}
+                      transparent
+                      opacity={0.88}
+                      clearcoat={0.9}
+                      clearcoatRoughness={0.05}
+                    />
+                  </mesh>
+
+                  {/* Icono del hexágono centrado */}
+                  <Html
+                    transform
+                    distanceFactor={5}
+                    zIndexRange={[100, 0]}
+                    pointerEvents="none"
+                    position={[0, 0, 0.1]}
+                  >
+                    <div
+                      style={{
+                        pointerEvents: "none",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        src={image}
+                        alt=""
+                        style={{
+                          width: "400px",
+                          height: "auto",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                  </Html>
+                </TiltGroup>
+              </Float>
+            </Canvas>
+          )}
         </div>
       </div>
 
