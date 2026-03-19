@@ -140,7 +140,7 @@ const HomeSection = () => {
             >
               <span className="hs-badge-dot" />
               <span className="hs-badge-ring" />
-              Agencia Digital Premium · 2025
+              Agencia Digital · 2025
             </motion.div>
 
             {/* ── Title: letter stagger ───────────────────────────── */}

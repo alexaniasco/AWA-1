@@ -241,7 +241,7 @@
 @media (max-width: 480px) {
   .second-section-wrapper { width: 100%; }
   .second-section-container {
-    margin-bottom: 6rem;
+    margin-bottom: 10px;
     padding: 24px 18px;
   }
   .second-title { font-size: 30px; margin-bottom: 14px; }
